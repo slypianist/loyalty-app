@@ -17,6 +17,11 @@ class UserController extends Controller
 
     }
 
+     /**
+     * Get a Partner JWT via given credentials.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
 
     public function login(Request $request){
    $credentials =     $this->validate($request,[
@@ -32,6 +37,16 @@ class UserController extends Controller
 
      return $this->respondWithToken($token);
 
+    }
+
+    /**
+     * Log the Partner out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(){
+        auth()->logout();
+        return response()->json(['message'=> 'Logout successful']);
     }
 
     protected function respondWithToken($token)

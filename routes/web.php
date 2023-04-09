@@ -2,6 +2,9 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
+use App\Http\Controllers\AdminController;
+use Illuminate\Auth\Events\Logout;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -24,10 +27,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('admin/test', 'AdminController@getTest');
+        $router->post('admin/logout', 'AdminController@logout');
     });
 
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
         $router->get('user/test', 'UserController@getTest');
+        $router->post('user/logout', 'UserController@logout');
     });
 
 
