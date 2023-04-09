@@ -80,6 +80,12 @@ $app->configure('app');
      'auth' => App\Http\Middleware\Authenticate::class,
  ]);
 
+ $app->routeMiddleware([
+    'auth'       => App\Http\Middleware\Authenticate::class,
+    'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
+    'role'       => Spatie\Permission\Middlewares\RoleMiddleware::class,
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers
@@ -96,6 +102,10 @@ $app->configure('app');
  $app->register(App\Providers\EventServiceProvider::class);
  $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
  $app->configure('jwt');
+ $app->configure('permission');
+ $app->alias('cache', \Illuminate\Cache\CacheManager::class);  // if you don't have this already
+ $app->register(Spatie\Permission\PermissionServiceProvider::class);
+
 
 
 /*

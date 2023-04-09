@@ -22,7 +22,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->post('user/login', 'UserController@login');
 
-    $router->group(['middleware' => ['auth:partner']], function () use ($router) {
+    $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('admin/test', 'AdminController@getTest');
     });
 

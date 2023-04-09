@@ -29,7 +29,7 @@ class AdminController extends Controller
       //  dd($credentials);
 
 
-            if(!$token = auth('partner')->attempt($credentials)){
+            if(!$token = auth('admin')->attempt($credentials)){
                 return response()->json(['error'=>'Invalid username or password'],401);
             }
 
@@ -41,8 +41,8 @@ class AdminController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-           'user' => auth('partner')->user(),
-            'expires_in' => auth('partner')->factory()->getTTL() * 60 *24
+           'user' => auth('admin')->user(),
+            'expires_in' => auth('admin')->factory()->getTTL() * 60 *24
         ]);
 
        }

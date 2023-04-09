@@ -12,7 +12,7 @@ return [
             'provider' => 'users',
         ],
 
-        'partner' =>[
+        'admin' =>[
             'driver' => 'jwt',
             'provider' => 'admins'
         ]
