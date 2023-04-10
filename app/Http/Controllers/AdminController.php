@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Admin;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -80,5 +81,37 @@ class AdminController extends Controller
 
        public function getTest(){
         return response()->json(['message'=>'Admin test is working']);
+       }
+
+       public function index(){
+        $admin = Admin::all();
+        return response()->json(['admin'=> $$adim]);
+
+       }
+
+       public function save(Request $request){
+        $this->validate($request,[
+            'firstName' => 'required',
+            'lastName' => 'required',
+            'phoneNum' => 'required|string',
+            'address'   => 'required',
+            'gender' => 'required'
+        ]);
+
+        $input = $request->all();
+
+        Admin::create($input);
+       }
+
+       public function destroy(Admin $admin){
+
+       }
+
+       public function assignShop(){
+
+       }
+
+       public function unassignShop(){
+
        }
 }
