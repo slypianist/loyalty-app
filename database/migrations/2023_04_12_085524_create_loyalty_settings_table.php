@@ -13,15 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('partners', function (Blueprint $table) {
+        Schema::create('loyalty_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('firstName');
-            $table->string('lastName');
-            $table->string('password');
-            $table->string('phoneNum');
-            $table->string('address');
-            $table->string('gender');
-            $table->string('profilePix')->nullable();
+            $table->string('name');
+            $table->float('loyaltyRule', 5, 2);
+            $table->enum('status',['ACTIVE', 'INACTIVE'])->default('INACTIVE');
             $table->timestamps();
         });
     }
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partners');
+        Schema::dropIfExists('loyalty_settings');
     }
 };

@@ -17,11 +17,11 @@ class SettingsController extends Controller
         //
     }
 
-    public function index(){
+   /*  public function index(){
         $rule = Setting::all()->get(5);
         return response()->json(['rule'=>$rule]);
 
-    }
+    } */
 
     public function addLoyaltyRule(Request $request){
         $rule = new Setting();
@@ -42,6 +42,11 @@ class SettingsController extends Controller
         $rule->update();
 
         return response()->json(['message'=>'Loyalty is update']);
+
+    }
+
+    public function index(){
+      $settings = Setting::allSettings();
 
     }
 }

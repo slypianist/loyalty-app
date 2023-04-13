@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
+use App\Models\Shop;
 
+use App\Models\Admin;
+use App\Models\Partner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,76 +22,24 @@ class AdminController extends Controller
         //
     }
 
-     /**
-     * Get a JWT via given credentials.
+       /**
+     * All Admin user List.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-
-    public function login(Request $request){
-        $this->validate($request,[
-            'email' => 'required|email',
-            'password' => 'required'
-
-        ]);
-       $credentials = $request->only('email', 'password');
-      //  dd($credentials);
-
-
-            if(!$token = auth('admin')->attempt($credentials)){
-                return response()->json(['error'=>'Invalid username or password'],401);
-            }
-
-            return $this->respondWithToken($token);
-    }
-
-    public function refresh(){
-        return $this->respondWithToken(auth('admin')->refresh());
-    }
-
-
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-
-    public function logout(){
-        auth('admin')->logout();
-        return response()->json(['message'=>'You have logged out successfully']);
-    }
-
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-
-       protected function respondWithToken($token){
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-           'user' => auth('admin')->user(),
-            'expires_in' => auth('admin')->factory()->getTTL() * 60 *24
-        ]);
-
-       }
-
-       public function getTest(){
-        return response()->json(['message'=>'Admin test is working']);
-       }
 
        public function index(){
         $admin = Admin::all();
-        return response()->json(['admin'=> $$adim]);
+        return response()->json(['admin'=> $admin],200);
 
        }
 
-       public function save(Request $request){
+       /**
+     * Create an Admin record.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function save(Request $request){
         $this->validate($request,[
             'firstName' => 'required',
             'lastName' => 'required',
@@ -103,15 +53,31 @@ class AdminController extends Controller
         Admin::create($input);
        }
 
-       public function destroy(Admin $admin){
+
+    /**
+     * Update an admin details.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function update(Admin $admin, Request $request){
+        $data = $request->all();
+        $admin->update($data);
+        return response()->json(['message'=>'Update successful', 'status'=>true], 200);
+
+
+    }
+
+    /**
+     * Delete an Admin.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Admin $admin){
+        $admin->delete();
+        return response()->json(['message'=>'Record deleted successfully'], 200);
 
        }
 
-       public function assignShop(){
 
-       }
-
-       public function unassignShop(){
-
-       }
 }

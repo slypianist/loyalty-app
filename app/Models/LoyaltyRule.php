@@ -4,6 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Withdrawal extends Model{
+class LoyaltyRule extends Model{
 
 }

@@ -17,22 +17,22 @@ use Illuminate\Auth\Events\Logout;
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return response()->json(['app'=>$router->app->version()]);
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->post('admin/login', 'AdminController@login');
+    $router->post('admin/login', 'AuthController@adminLogin');
 
-    $router->post('user/login', 'UserController@login');
+    $router->post('partner/login', 'AuthController@partnerLogin');
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
-        $router->get('admin/test', 'AdminController@getTest');
-        $router->post('admin/logout', 'AdminController@logout');
+        $router->get('admin/test', 'AuthController@getTest');
+        $router->post('admin/logout', 'AuthController@adminLogout');
     });
 
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
-        $router->get('user/test', 'UserController@getTest');
-        $router->post('user/logout', 'UserController@logout');
+        $router->get('partner/test', 'AuthController@getTest');
+        $router->post('user/logout', 'AuthController@partnerLogout');
     });
 
 
