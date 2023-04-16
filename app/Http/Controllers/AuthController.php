@@ -62,23 +62,7 @@ class AuthController extends Controller
         return response()->json(['message'=>'You have logged out successfully']);
     }
 
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-    */
-    protected function respondWithToken($token, $guard=''){
 
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'user' => auth($guard)->user(),
-            'expires_in' => auth('admin')->factory()->getTTL() * 60 *24
-        ]);
-
-       }
 
     public function getTest(){
         return response()->json(['message'=>'Admin test is working']);
@@ -94,7 +78,10 @@ class AuthController extends Controller
 
 
     /**
+     *
      * Get a Partner JWT via given credentials.
+     *
+     *
      *
      * @return \Illuminate\Http\JsonResponse
     */
@@ -114,14 +101,40 @@ class AuthController extends Controller
 
          }
 
-         /**
+        /**
           * Log the Partner out (Invalidate the token).
           *
           * @return \Illuminate\Http\JsonResponse
-          */
+        */
     public function partnerLogout(){
         auth()->logout();
         return response()->json(['message'=> 'Logout successful']);
     }
+
+    /**
+     *
+     * ================== End Authentication==================
+     *
+     *
+    */
+
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+    */
+    protected function respondWithToken($token, $guard=''){
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'user' => auth($guard)->user(),
+            'expires_in' => auth('admin')->factory()->getTTL() * 60 *24
+        ]);
+
+       }
 
 }

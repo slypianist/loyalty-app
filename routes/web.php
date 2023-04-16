@@ -28,8 +28,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('admin/test', 'AuthController@getTest');
         $router->post('admin/logout', 'AuthController@adminLogout');
+        $router->get('admin', 'AdminController@index');
+        $router->post('admin', 'AdminController@save');
+        $router->patch('admin/{id}', 'AdminController@update');
+        $router->delete('admin/{id}', 'AdminController@destroy');
     });
-
+        // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
         $router->get('partner/test', 'AuthController@getTest');
         $router->post('user/logout', 'AuthController@partnerLogout');

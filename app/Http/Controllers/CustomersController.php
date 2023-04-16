@@ -114,13 +114,13 @@ class CustomersController extends Controller
     public function getCustomerPhoneNum(Request $request){
         $phone = $request->phoneNum;
         try {
-            $phoneNum = Customer::findOrFail($phone)->first();
+            $customer = Customer::where('phoneNum', $phone)->firstorFail();
         } catch (ModelNotFoundException $th) {
-            $th->getMessage();
-            return response()->json(['message'=>'Phone Number does not exist.'],404);
+           $err = $th->getMessage();
+            return response()->json(['message'=>'Phone Number does not exist in our records.', 'err'=>$err],404);
 
         }
-        return response()->json(['customer_phoneNum'=>$phoneNum],200);
+        return response()->json(['customerDetails'=>$customer],200);
 
     }
 
