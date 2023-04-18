@@ -20,7 +20,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'name', 'email',
+        'firstName', 'email','lastName','phoneNum','address'
     ];
 
     /**
@@ -38,5 +38,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function getJWTCustomClaims(){
         return [];
+    }
+
+    public function shops(){
+        return $this->hasMany(Shop::class);
     }
 }

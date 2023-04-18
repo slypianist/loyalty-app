@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
-            $table->foreignID('partner_id')->nullable()->onDelete('cascade')->constrained();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('shops')->onDelete('cascade');
+            $table->uuid('shopCode');
             $table->string('name');
             $table->string('address')->nullable();
             $table->string('location');

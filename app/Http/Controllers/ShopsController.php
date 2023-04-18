@@ -93,6 +93,7 @@ class ShopsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function unassignShop(Shop $shop){
+        $id = $shop->partner_id;
 
         $assignedPartner = User::findOrFail($id)->get();
         $shop->partner_id = NULL;

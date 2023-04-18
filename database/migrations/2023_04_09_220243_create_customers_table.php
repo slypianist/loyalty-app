@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('firstName');
             $table->string('lastName');
-            $table->string('phoneNum');
+            $table->string('phoneNum')->unique();
             $table->string('address');
             $table->string('gender');
+            $table->enum('status',['ACTIVE','INACTIVE'])->default('ACTIVE');
             $table->string('image')->nullable();
             $table->timestamps();
         });

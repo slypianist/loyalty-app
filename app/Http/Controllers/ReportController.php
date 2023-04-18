@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+
 class ReportController extends Controller
 {
     /**
@@ -15,6 +17,11 @@ class ReportController extends Controller
     }
 
     public function getClaims(){
+        DB::table('withdrawals')
+        ->join('customers', 'customers.id', '=', 'withdrawals.customer_id')
+        ->join('','')
+        ->select('');
+
 
     }
 

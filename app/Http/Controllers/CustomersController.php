@@ -6,7 +6,7 @@ use App\Models\Customer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class CustomersController extends Controller
+class CustomersController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -19,7 +19,8 @@ class CustomersController extends Controller
     }
 
     public function index(){
-        $customer = Customer::orderBy('id', 'DESC')->withCount('withdrawal')->paginate(5);
+        $customer = Customer::orderBy('id', 'DESC')->paginate(5);
+       return $this->sendResponse($customer, 'All customer');
 
     }
 
@@ -46,12 +47,11 @@ class CustomersController extends Controller
         }
 
     $customer = Customer::create($input);
-
-    return response()->json(['message'=>'Customer created successfully'],200);
+    return $this->sendResponse($customer, 'Record has been created');
 
     }
         // Update Customer Details
-    public function update(Request $request,Customer $customer){
+    public function update(Request $request, $id){
 
         $this->validate($request,[
             'firstName' => 'required',
@@ -73,8 +73,16 @@ class CustomersController extends Controller
             $input['image'] = $fileNameToStore;
             }
         }
+
+        try {
+            $customer = Customer::findOrFail($id);
             $customer->update($input);
-            return response()->json(['message'=> 'Update successful'],200);
+            return $this->sendResponse($customer, 'Successful');
+           // return response()->json(['message'=> 'Update successful'],200);
+        } catch (\Throwable $th) {
+           return $this->sendError('An error occured', $th->getMessage());
+        }
+
     }
 
         // Delete Customer Details
@@ -92,18 +100,21 @@ class CustomersController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function getCustomer($phone){
+    public function getCustomer(Request $request){
+        $phone = $request->phone;
         try {
-            $customer = Customer::findOrFail($phone)->get();
-            $points = $customer->loyaltyaccount()->point;
+            $customer = Customer::where('phoneNum', $phone);
+            $points = $customer->loyaltyaccount();
             $data['customerDetails'] = $customer;
             $data['customerPoints'] = $points;
         } catch (ModelNotFoundException $e) {
            $e->getMessage();
-           return response()->json(['No record found.']);
+           return $this->sendError('An error has occured', $e->getMessage());
+           //return response()->json(['No record found.']);
         }
 
-        return response()->json(['customer'=>$data],200);
+            return $this->sendResponse($data, 'Customer details with points');
+       // return response()->json(['customer'=>$data],200);
     }
 
     /**
@@ -116,11 +127,10 @@ class CustomersController extends Controller
         try {
             $customer = Customer::where('phoneNum', $phone)->firstorFail();
         } catch (ModelNotFoundException $th) {
-           $err = $th->getMessage();
-            return response()->json(['message'=>'Phone Number does not exist in our records.', 'err'=>$err],404);
+            return $this->sendError('An error occured', $th->getMessage());
 
         }
-        return response()->json(['customerDetails'=>$customer],200);
+        return $this->sendResponse($customer, 'Successful');
 
     }
 

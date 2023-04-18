@@ -35,8 +35,6 @@ class AdminController extends BaseController
         $details['admin'] = Admin::all();
         return $this->sendResponse($details, 'Successful');
 
-      //  return response()->json(['admin'=> $admin],200);
-
        }
 
        /**
@@ -44,7 +42,7 @@ class AdminController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function save(Request $request){
+    public function saveAdmin(Request $request){
 
         $validation = Validator::make($request->all(),[
             'firstName' => 'required',
@@ -74,6 +72,15 @@ class AdminController extends BaseController
 
        }
 
+       public function showAdmin($id){
+        try {
+            $admin = Admin::findOrFail($id);
+            return $this->sendResponse($admin, 'successful');
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('Operation Failed', $th->getMessage());
+        }
+       }
+
 
     /**
      * Update an admin details.
@@ -81,7 +88,7 @@ class AdminController extends BaseController
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function update($id, Request $request){
+    public function updateAdmin($id, Request $request){
         $validation = Validator::make($request->all(),[
             'firstName' => 'required',
             'lastName' => 'required',
@@ -126,7 +133,7 @@ class AdminController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id){
+    public function destroyAdmin($id){
         try {
             $admin = Admin::findOrFail($id);
             $data =    $admin->delete();
