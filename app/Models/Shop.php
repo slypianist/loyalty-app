@@ -16,7 +16,7 @@ class Shop extends Model{
     public $incrementing = true; */
 
     protected $fillable = [
-        'name',  'address', 'location','status',
+        'name',  'address', 'location','shopCode'
     ];
 
     public function user(){

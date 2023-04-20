@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\BaseController;
@@ -22,7 +23,8 @@ class ShopsController extends BaseController
     }
 
     public function index(){
-        $shops = Shop::all()->orderBy('id')->paginate(10);
+        $shops = Shop::orderBy('id', 'ASC')->paginate(10);
+       // return $this->sendResponse($shops, 200);
         return response()->json(['shops'=>$shops]);
     }
 
@@ -33,15 +35,18 @@ class ShopsController extends BaseController
             'name' => 'required',
             'location' => 'required',
             'address' => 'required',
-            'shopCode' => 'required'
+           // 'shopCode' => 'required'
         ],
         $messages=[
 
         ]);
 
         $data = $request->all();
+        $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
+        //dd($data);
         $shop = Shop::create($data);
-        return response()->json(['message'=>'Created successfully'],200);
+        return $this->sendResponse($shop, 'Shop created succesfully');
+     //   return response()->json(['message'=>'Created successfully'],200);
 
     }
 
@@ -51,7 +56,7 @@ class ShopsController extends BaseController
         try {
             $shop = Shop::findOrFail($id);
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('An error occurred',$th->getMessage());
+            return $this->sendError('An error occurred', $th->getMessage());
         }
         $data['shopDetails'] =  DB::table('shops')
                         ->join('users', 'shops.user_id', '=', 'users.id')
@@ -66,8 +71,27 @@ class ShopsController extends BaseController
     }
 
     //Update Shop
-    public function updateShop($id){
+    public function updateShop(Request $request, $id){
+        try {
+            $shop = Shop::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+        }
+        $this->validate($request, [
+            'name' => 'required',
+            'location' => 'required',
+            'address' => 'required',
+           // 'shopCode' => 'required'
+        ],
+        $messages=[
 
+        ]);
+
+        $data = $request->all();
+      //  $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
+        //dd($data);
+        $shop->update($data);
+        return $this->sendResponse($shop, 'Shop updated succesfully');
 
     }
 
@@ -78,11 +102,13 @@ class ShopsController extends BaseController
             return $this->sendError('An error occurred', $th->getMessage());
         }
         if($shop->status === 'ASSIGNED'){
-            return response()->json(['message'=>'Shop: '.$shop->name.' is currently assigned. Unassign before deleting.']);
+            return $this->sendError(['result'=>$shop->name.' is currently assigned. Unassign before deleting.']);
+           // return response()->json(['message'=>'Shop: '.$shop->name.' is currently assigned. Unassign before deleting.']);
         }else{
             // Delete shop
             $shop->delete();
-            return response()->json(['Deleted successfully.']);
+            return $this->sendResponse($shop, 'Shop deleted successfully');
+
         }
 
     }
@@ -93,14 +119,23 @@ class ShopsController extends BaseController
      * @return \Illuminate\Http\JsonResponse
     */
 
-    public function assignShop(Shop $shop, Request $request){
+    public function assignShop(Request $request){
         $id = $request->id;
+        $shopId = $request->shopId;
 
-        $assignedPartner = User::where('id', $id)->first();
+        try {
+           $partner = User::where('id', $id)->first();
+           $shop = Shop::where('id', $shopId)->first();
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
 
-        $shop->partner_id = $assignedPartner->id;
+        }
+
+        $shop->user()->associate($partner);
+        $shop->status = "ASSIGNED";
         $shop->save();
-        return response()->json(['message'=>$shop->name.' Assigned to '. $assignedPartner->lastName. $assignedPartner->firstName]);
+
+        return response()->json(['message'=>'Shop '.$shop->name.' Assigned to '. $partner->lastName.' '. $partner->firstName]);
 
        }
 

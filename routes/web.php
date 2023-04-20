@@ -55,21 +55,25 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->patch('partner/{id}', 'UserController@updatePartner');
         $router->delete('partner/{id}', 'UserController@deletePartner');
 
+        //Shops
+
+        $router->get('shop', 'ShopsController@index');
+        $router->post('shop', 'ShopsController@createShop');
+        $router->post('/shop/assign', 'ShopsController@assignShop');
+        $router->get('shop/{id}', 'ShopsController@showShop');
+        $router->patch('shop/{id}', 'ShopsController@updateShop');
+        $router->delete('shop/{id}', 'ShopsController@destroyShop');
+
+
         //Customer
         $router->get('customer', 'CustomersController@index');
         $router->post('customer', 'CustomersController@createCustomer');
-        $router->get('customer/{id}', 'CustomersController@getCustomer');
         $router->patch('customer/{id}', 'CustomersController@updateCustomer');
         $router->delete('customer/{id}', 'CustomersController@destroyCustomer');
-        $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
+        $router->get('customer/search{?phoneNum}', 'CustomersController@getCustomerPhoneNum');
+        $router->get('customer/{id}', 'CustomersController@getCustomer');
 
-        //Shops
 
-        $router->get('shop', 'ShopController@index');
-        $router->post('shop', 'ShopController@createShop');
-        $router->get('shop/{id}', 'ShopController@showShop');
-        $router->patch('shop/{id}', 'ShopController@updateShop');
-        $router->delete('shop/{id}', 'ShopController@deleteShop');
 
 
     });
