@@ -7,9 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model{
 
-    use HasUuids;
+    /* use HasUuids;
 
-    protected $hidden = [
+    protected $primaryKey = 'id';
+
+    protected $keyType = 'int';
+
+    public $incrementing = true; */
+
+    protected $fillable = [
         'name',  'address', 'location','status',
     ];
 

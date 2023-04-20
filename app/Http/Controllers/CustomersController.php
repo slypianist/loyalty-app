@@ -20,11 +20,11 @@ class CustomersController extends BaseController
 
     public function index(){
         $customer = Customer::orderBy('id', 'DESC')->paginate(5);
-       return $this->sendResponse($customer, 'All customer');
+       return $this->sendResponse($customer, 'All customers');
 
     }
 
-    public function store(Request $request){
+    public function createCustomer(Request $request){
         $this->validate($request,[
             'firstName' => 'required',
             'lastName' => 'required',
@@ -36,24 +36,24 @@ class CustomersController extends BaseController
         $input =    $request->all();
 
         if($request->hasFile('image')){
-            $fileNameExtension = $request('image')->getClientOriginalName();
-            $fileExtension = $request('image')->getClientExtension();
+            $fileNameExtension = request('image')->getClientOriginalName();
+            $fileExtension = request('image')->getClientOriginalExtension();
             $fileName = pathinfo($fileNameExtension, PATHINFO_FILENAME);
             $fileNameToStore = $fileName.'.'.time().'.'.$fileExtension;
-            $path = $request->file('image')->move(public_path('profile'), $fileName);
+            $path = $request->file('image')->storeAs('profiles', $fileNameToStore);
             $input['image'] = $fileNameToStore;
         } else{
             $input['image'] = 'default.jpg';
         }
-
+//dd($input);
     $customer = Customer::create($input);
-    return $this->sendResponse($customer, 'Record has been created');
+    return $this->sendResponse($customer, 'Customer record created successfully.');
 
     }
         // Update Customer Details
-    public function update(Request $request, $id){
+    public function updateCustomer(Request $request, $id){
 
-        $this->validate($request,[
+         $this->validate($request,[
             'firstName' => 'required',
             'lastName' => 'required',
             'phoneNum' => 'required|string',
@@ -69,28 +69,34 @@ class CustomersController extends BaseController
             $fileExtension = $request('image')->getClientExtension();
             $fileName = pathinfo($fileNameExtension, PATHINFO_FILENAME);
             $fileNameToStore = $fileName.'.'.time().'.'.$fileExtension;
-            $path = $request->file('image')->move(public_path('profile'), $fileName);
+            $path = $request->file('image')->storeAs('profile', $fileNameToStore);
             $input['image'] = $fileNameToStore;
             }
         }
 
         try {
             $customer = Customer::findOrFail($id);
-            $customer->update($input);
-            return $this->sendResponse($customer, 'Successful');
-           // return response()->json(['message'=> 'Update successful'],200);
-        } catch (\Throwable $th) {
+
+        } catch (ModelNotFoundException $th) {
            return $this->sendError('An error occured', $th->getMessage());
         }
+            $customer->update($input);
+            return $this->sendResponse($customer, 'Successful');
 
     }
 
         // Delete Customer Details
 
-    public function destroy(Customer $customer){
+    public function destroyCustomer($id){
+        try {
+            $customer = Customer::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+           return $this->sendError('An error Occurred', $th->getMessage());
+        }
         $customer->delete();
+        return $this->sendResponse($customer, 'Customer deleted successfully');
 
-        return response()->json(['message'=>'Customer deleted successfully'],200);
+      //  return response()->json(['message'=>'Customer deleted successfully'],200);
 
     }
 
@@ -100,10 +106,10 @@ class CustomersController extends BaseController
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function getCustomer(Request $request){
-        $phone = $request->phone;
+    public function getCustomer(Request $request, $id){
+       // $phone = $request->phone;
         try {
-            $customer = Customer::where('phoneNum', $phone);
+            $customer = Customer::where('id', $id);
             $points = $customer->loyaltyaccount();
             $data['customerDetails'] = $customer;
             $data['customerPoints'] = $points;
@@ -124,10 +130,11 @@ class CustomersController extends BaseController
      */
     public function getCustomerPhoneNum(Request $request){
         $phone = $request->phoneNum;
+
         try {
             $customer = Customer::where('phoneNum', $phone)->firstorFail();
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('An error occured', $th->getMessage());
+            return $this->sendError('No match found for this record.', $th->getMessage());
 
         }
         return $this->sendResponse($customer, 'Successful');

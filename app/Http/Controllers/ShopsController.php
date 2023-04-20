@@ -6,8 +6,10 @@ use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\BaseController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ShopsController extends Controller
+class ShopsController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -26,7 +28,7 @@ class ShopsController extends Controller
 
     // Save a shop
 
-    public function store(Request $request){
+    public function createShop(Request $request){
         $this->validate($request, [
             'name' => 'required',
             'location' => 'required',
@@ -45,22 +47,37 @@ class ShopsController extends Controller
 
     // View a shop
 
-    public function show(Shop $shop){
-        $id = $shop->id;
+    public function showShop($id){
+        try {
+            $shop = Shop::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred',$th->getMessage());
+        }
         $data['shopDetails'] =  DB::table('shops')
                         ->join('users', 'shops.user_id', '=', 'users.id')
-                        ->where('shops.id', '=', $id)
+                        ->where('shops.id', '=', $shop->id)
                         ->select('shops.id AS shopID', 'shops.location AS shopLocation', 'shops.name AS shopName', 'shops.address AS shopAddress', 'shops.code AS shopCodeName',
                         'users.firstName AS partnerFirstName', 'users.lastName AS partnerLastName')
                         ->get();
 
-        return response()->json(['result'=>$data], 200);
+        return $this->sendResponse($data,200);
 
 
     }
 
-    public function destroy(Shop $shop){
-        if($shop->status == 'ASSIGNED'){
+    //Update Shop
+    public function updateShop($id){
+
+
+    }
+
+    public function destroyShop($id){
+        try {
+            $shop = Shop::findOrfail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+        }
+        if($shop->status === 'ASSIGNED'){
             return response()->json(['message'=>'Shop: '.$shop->name.' is currently assigned. Unassign before deleting.']);
         }else{
             // Delete shop

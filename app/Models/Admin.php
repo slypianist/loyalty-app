@@ -20,7 +20,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      * @var string[]
      */
     protected $fillable = [
-        'firstName', 'email','lastName', 'dept',
+        'firstName', 'email','lastName', 'dept','password',
     ];
 
     /**

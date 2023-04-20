@@ -27,9 +27,9 @@ $router->get('key', function() use ($router){
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->post('admin/login', 'AuthController@adminLogin');
+    $router->post('admins/login', 'AuthController@adminLogin');
 
-    $router->post('partner/login', 'AuthController@partnerLogin');
+    $router->post('partners/login', 'AuthController@partnerLogin');
 
             // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
@@ -50,15 +50,26 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         //Partners
         $router->get('partner', 'UserController@index');
-        $router->post('partner', 'UserController@store');
-        $router->get('partner/{id}', 'UserController@show');
-        $router->patch('partner/{id}', 'UserController@update');
-        //$router->delete('partner/{id}', 'UserController@destroy');
+        $router->post('partner', 'UserController@createPartner');
+        $router->get('partner/{id}', 'UserController@showPartner');
+        $router->patch('partner/{id}', 'UserController@updatePartner');
+        $router->delete('partner/{id}', 'UserController@deletePartner');
 
         //Customer
-
+        $router->get('customer', 'CustomersController@index');
+        $router->post('customer', 'CustomersController@createCustomer');
+        $router->get('customer/{id}', 'CustomersController@getCustomer');
+        $router->patch('customer/{id}', 'CustomersController@updateCustomer');
+        $router->delete('customer/{id}', 'CustomersController@destroyCustomer');
+        $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
 
         //Shops
+
+        $router->get('shop', 'ShopController@index');
+        $router->post('shop', 'ShopController@createShop');
+        $router->get('shop/{id}', 'ShopController@showShop');
+        $router->patch('shop/{id}', 'ShopController@updateShop');
+        $router->delete('shop/{id}', 'ShopController@deleteShop');
 
 
     });

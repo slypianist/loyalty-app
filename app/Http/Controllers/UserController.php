@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Shop;
 use App\Models\User;
 use App\Models\Invoice;
 use App\Models\Customer;
@@ -9,9 +10,11 @@ use App\Models\LoyaltyRule;
 use Illuminate\Http\Request;
 use App\Models\LoyaltyAccount;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\BaseController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -20,6 +23,15 @@ class UserController extends Controller
      */
     public function __construct()
     {
+
+    }
+
+    public function index(){
+        $partner = User::orderBy('id', 'ASC')->paginate(5);
+        if ($partner->count() == NULL) {
+            return $this->sendResponse($partner, 'No records');
+        }
+        return $this->sendResponse($partner, 'Successful');
 
     }
 
@@ -34,17 +46,77 @@ class UserController extends Controller
         ]);
 
         $data = $request->all();
-        User::create($data);
-        return response()->json(['message'=>'Partner created successfully.']);
+
+        if($request->has('password')){
+
+            $data['password'] = Hash::make($request->password);
+
+        }else{
+
+            $data = $request->except('password');
+        }
+
+        $data = $request->all();
+      $user =  User::create($data);
+        return $this->sendResponse($user, 'Partner created successfully');
+       // return response()->json(['message'=>'Partner created successfully.']);
     }
 
-    public function showPartner(User $user){
-        $id = $user->id;
-        // Use DB Query BUilder
-      $partner =  DB::table('users')
-                            ->join('shops', 'shops.id', '=', 'users.id')
-                            ->where('users.id', $id)
-                            ->select('users.firstName AS partnerFirstName', 'users.lastName AS partnerLastName', 'shops.name AS shopName', 'shops.location AS shopLocation', 'shops.address AS shopAddress');
+
+
+    // Show Partners details.
+
+    public function showPartner($id){
+        try {
+            $partner = User::findOrFail($id);
+
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+        }
+        $data['partner'] =  DB::table('users')
+        ->where('users.id', $id)
+       ->select('users.firstName AS firstName', 'users.lastName AS lastName', 'users.address AS address',
+             'users.phoneNum AS phoneNumber', 'users.email AS email')
+        ->get();
+        $data['assignedShops'] = Shop::where('user_id', $partner->id)->get();
+
+        return $this->sendResponse($data, 'Successful');
+
+    }
+        // Update a Partner Info
+    public function updatePartner(Request $request, $id){
+
+        $this->validate($request,[
+            'firstName' => 'required',
+            'lastName'=> 'required',
+            'email' => 'required|email',
+            'phoneNum' => 'required',
+            'address' => 'nullable',
+        ]);
+        $data = $request->all();
+        try {
+            $partner = User::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+        }
+        $partner->update($data);
+
+        return $this->sendResponse($partner, 'Update successful');
+
+    }
+
+    public function deletePartner($id){
+        try {
+            $partner = User::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+        }
+        if($partner->shops()->count()>= 1){
+            return $this->sendError('You cannot delete a partner that is currently assigned to a shop(s).');
+        }
+
+        return $this->sendResponse($partner, 'Record successfully deleted.');
+
     }
 
     public function addLoyaltyPoints(Request $request){
@@ -113,6 +185,11 @@ class UserController extends Controller
     }
 
     public function dashboard(){
+        $data = [];
+        $data['totalCustomers'];
+        $data['totalShops'];
+        $data['totalClaims'];
+        $data['customers'];
 
     }
 

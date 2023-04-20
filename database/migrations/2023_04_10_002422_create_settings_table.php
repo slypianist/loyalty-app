@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('siteName');
             $table->text('siteDescription');
+            $table->string('logo');
             $table->timestamps();
         });
     }

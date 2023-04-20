@@ -32,7 +32,7 @@ class AdminController extends BaseController
      */
 
        public function index(){
-        $details['admin'] = Admin::all();
+        $details['admin'] = Admin::orderBy('id', 'DESC')->paginate(2);
         return $this->sendResponse($details, 'Successful');
 
        }
@@ -65,6 +65,8 @@ class AdminController extends BaseController
         }
 
         $input = $request->all();
+   //     dd($input);
+        $input['password'] = Hash::make($request->password);
 
         $admin =   Admin::create($input);
 

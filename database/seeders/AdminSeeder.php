@@ -17,10 +17,10 @@ class AdminSeeder extends Seeder
     public function run()
     {
         $admins = Admin::create([
-            'firstNname' => 'Dayo',
+            'firstName' => 'Dayo',
             'lastName' => 'Ajala',
             'email' => 'dayo@gmail.com',
-            'dept' => 'Monitoring',
+            'dept' => 'IT/Monitoring',
             'password' => Hash::make('password')
         ]);
     }
