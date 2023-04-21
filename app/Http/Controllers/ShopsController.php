@@ -120,11 +120,11 @@ class ShopsController extends BaseController
     */
 
     public function assignShop(Request $request){
-        $id = $request->id;
+        $partnerId = $request->partnerId;
         $shopId = $request->shopId;
 
         try {
-           $partner = User::where('id', $id)->first();
+           $partner = User::where('id', $partnerId)->first();
            $shop = Shop::where('id', $shopId)->first();
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occurred', $th->getMessage());
@@ -135,7 +135,7 @@ class ShopsController extends BaseController
         $shop->status = "ASSIGNED";
         $shop->save();
 
-        return response()->json(['message'=>'Shop '.$shop->name.' Assigned to '. $partner->lastName.' '. $partner->firstName]);
+        return response()->json(['status'=>200,'message'=>'Shop: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName]);
 
        }
 
@@ -144,13 +144,35 @@ class ShopsController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function unassignShop(Shop $shop){
-        $id = $shop->partner_id;
+    public function unassignShop(Request $request){
+        $shopId = $request->id;
 
-        $assignedPartner = User::findOrFail($id)->get();
-        $shop->partner_id = NULL;
-        $shop->save();
-        return response()->json(['message'=>$shop->name.' Unassigned from '. $assignedPartner->lastName]);
+        try {
+            $shop = Shop::findOrFail($shopId);
+
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+
+        }
+        // Check shop status
+        if($shop->status === 'ASSIGNED'){
+            $partnerId = $shop->user_id;
+
+            try {
+                $partner = User::findorFail($partnerId);
+            } catch (ModelNotFoundException $th) {
+                return $this->sendError('An error occurred', $th->getMessage());
+
+            }
+            // Unassign shop.
+            $shop->user()->dissociate($partner);
+            $shop->status = "UNASSIGNED";
+            $shop->save();
+            return response()->json(['message'=>$shop->name.' Unassigned from '. $partner->lastName]);
+
+        }
+
+        return $this->sendError('Not allowed. Shop is not assigned to any partner');
 
        }
 

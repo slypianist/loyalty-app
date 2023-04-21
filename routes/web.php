@@ -60,6 +60,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('shop', 'ShopsController@index');
         $router->post('shop', 'ShopsController@createShop');
         $router->post('/shop/assign', 'ShopsController@assignShop');
+        $router->post('/shop/unassign', 'ShopsController@unassignShop');
         $router->get('shop/{id}', 'ShopsController@showShop');
         $router->patch('shop/{id}', 'ShopsController@updateShop');
         $router->delete('shop/{id}', 'ShopsController@destroyShop');
@@ -70,7 +71,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('customer', 'CustomersController@createCustomer');
         $router->patch('customer/{id}', 'CustomersController@updateCustomer');
         $router->delete('customer/{id}', 'CustomersController@destroyCustomer');
-        $router->get('customer/search{?phoneNum}', 'CustomersController@getCustomerPhoneNum');
+        $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
         $router->get('customer/{id}', 'CustomersController@getCustomer');
 
 
