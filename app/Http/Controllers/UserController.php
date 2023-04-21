@@ -13,6 +13,7 @@ use App\Models\LoyaltyAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\BaseController;
+use App\Models\LoyaltySetting;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends BaseController
@@ -121,53 +122,77 @@ class UserController extends BaseController
     }
 
     public function addLoyaltyPoints(Request $request){
-        $id = $request->phoneNum;
+        $customerId = $request->id;
         $invoiceNum = $request->invoiceNum;
 
         //Check if invoice is already used.
-        $invoice = Invoice::where('id', $invoiceNum)->first();
+        $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
 
-        //Check if customer is enrolled.
-        $customer = Customer::findorFail($id)->first();
+        $customer = Customer::findorFail($customerId)->first();
 
-        if($customer){
+
             if($invoice->count()>= 1){
-                return response()->json(['message'=>'This invoice has been used'],500);
+                return $this->sendError('This invoice has been used');
             }
-            $checkAcc = Account::where('user_id', $id)->first();
-            $rule = LoyaltyRule::where('status', 'ACTIVE')->first();
+            $acc = Account::where('user_id', $customerId)->first();
+            $rule = LoyaltySetting::where('status', 'ACTIVE')->first();
 
             // Update loyalty points if customer is already registered.
-            if($checkAcc->count() == 1){
+            if($acc->count() == 1){
+                $initialPoints = $request->amount;
                 $points = $request->amount*($rule/100);
-                $checkAcc->user_id = $id;
-                $checkAcc->point = $checkAcc->point+=$points;
-                $checkAcc->update();
+
+
+                $acc->point = $acc->point+=$points;
+                $acc->update();
 
                 //Save Invoice details
                 $invoice = new Invoice();
-                $invoice->invoiceNum = $request->invoiceNum;
-                $invoice->user_id = $customer->phoneNum;
+                $invoice->invoiceCode = $request->invoiceNum;
+                $invoice->user_id = $customerId;
                 $invoice->amount = $request->amount;
                 $invoice->save();
 
                 //Send Email to group and SMS to customer.
 
-                return response()->json(['message'=>'Accrued Points have been updated']);
+                $data['customerName'] = $customer->firstName.' '. $customer->lastName;
+                $data['customerPhone'] = $customer->phoneNum;
+                $data['amount'] = $invoice->amount;
+                $data['awardedPoint'] = $initialPoints;
+                $data['totalPoints'] = $points;
+
+                return $this->sendResponse($data, 'Accrued Points have been updated');
+
+
             }
             // Create a loyalty account if customer has none.
-            elseif ($checkAcc->count() == 0) {
-                $data = $request->all();
-                $data['point'] = $request->amount*($rule/100);
-                $customer->loyaltyaccount()->create($data);
+            elseif ($acc->count() === 0) {
+                $points = $request->amount*($rule/100);
+
+                $acc = new Account();
+                $acc->user_id = $customer->id;
+                $acc->point = $points;
+                $acc->save();
+
+                // Save Invoice details.
+                $invoice = new Invoice();
+                $invoice->invoiceCode = $request->invoiceNum;
+                $invoice->user_id = $customerId;
+                $invoice->amount = $request->amount;
+                $invoice->save();
+
+                $data['customerName'] = $customer->firstName.' '. $customer->lastName;
+                $data['customerPhone'] = $customer->phoneNum;
+                $data['amount'] = $invoice->amount;
+                $data['points'] = $points;
                 // Send Email to group and SMS to customer.
-                return response()->json(['message'=>'Loyalty account created & Points added'],200);
+                return $this->sendResponse($data, 'Loyalty account created & Points added');
+
             }
             else{
-                return response()->json(['error'=>'An error Occured adding points'],500);
+                return response()->json(['error'=>'An error occured adding points'],500);
             }
 
-        }
         return response()->json(['message'=>'No record for this customer'],404);
 
     }

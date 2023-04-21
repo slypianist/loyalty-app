@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('loyalty_settings', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->float('rule', 6, 2);
-            $table->enum('status',['ACTIVE', 'INACTIVE'])->default('INACTIVE');
+            $table->unsignedBigInteger('customer_id');
+            $table->foreignId('customer_id')->references('id')->on('customers')->onUpdate('cascade');
+            $table->double('amount',12,2);
+            $table->string('invoiceCode');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('loyalty_settings');
+        Schema::dropIfExists('invoices');
     }
 };

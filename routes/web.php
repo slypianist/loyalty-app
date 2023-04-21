@@ -74,6 +74,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
         $router->get('customer/{id}', 'CustomersController@getCustomer');
 
+        // Loyalty Points
+        $router->get('rule', 'LoyaltySettingController@getLoyaltyRule');
+        $router->post('rule', 'LoyaltySettingController@addLoyaltyRule');
+        $router->patch('rule/{$id}', 'LoyaltySettingController@updateLoyaltyRule');
+        $router->post('award/points', 'UserController@addLoyaltyPoints');
+        $router->post('claim/points', 'UserController@makeClaims');
+
 
 
 
