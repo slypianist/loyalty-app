@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\LoyaltyRule;
@@ -133,7 +134,7 @@ class UserController extends BaseController
             if($invoice->count()>= 1){
                 return response()->json(['message'=>'This invoice has been used'],500);
             }
-            $checkAcc = LoyaltyAccount::where('user_id', $id)->first();
+            $checkAcc = Account::where('user_id', $id)->first();
             $rule = LoyaltyRule::where('status', 'ACTIVE')->first();
 
             // Update loyalty points if customer is already registered.
@@ -179,7 +180,7 @@ class UserController extends BaseController
 
     public function getCustomerAccruedPoint(Request $request, $id){
         $id = $request->id;
-        $point = LoyaltyAccount::where('user_id', $id)->first();
+        $point = Account::where('user_id', $id)->first();
         return \response()->json(['message'=>$point],200);
 
     }

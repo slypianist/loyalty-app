@@ -124,8 +124,8 @@ class ShopsController extends BaseController
         $shopId = $request->shopId;
 
         try {
-           $partner = User::where('id', $partnerId)->first();
-           $shop = Shop::where('id', $shopId)->first();
+           $partner = User::where('id', $partnerId)->firstOrFail();
+           $shop = Shop::where('id', $shopId)->firstOrFail();
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occurred', $th->getMessage());
 
