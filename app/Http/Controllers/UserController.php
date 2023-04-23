@@ -131,25 +131,23 @@ class UserController extends BaseController
         $customer = Customer::findorFail($customerId)->first();
 
 
-            if($invoice->count()>= 1){
+            if($invoice){
                 return $this->sendError('This invoice has been used');
             }
-            $acc = Account::where('user_id', $customerId)->first();
-            $rule = LoyaltySetting::where('status', 'ACTIVE')->first();
-
+            $acc = Account::where('customer_id', $customerId)->first();
+            $loyaltyConfig = LoyaltySetting::where('status', 'ACTIVE')->first();
+            $rule = $loyaltyConfig->rule;
             // Update loyalty points if customer is already registered.
-            if($acc->count() == 1){
-                $initialPoints = $request->amount;
+            if($acc){
+               // $initialPoints = $request->amount*($rule/100);
                 $points = $request->amount*($rule/100);
-
-
                 $acc->point = $acc->point+=$points;
                 $acc->update();
 
                 //Save Invoice details
                 $invoice = new Invoice();
                 $invoice->invoiceCode = $request->invoiceNum;
-                $invoice->user_id = $customerId;
+                $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
                 $invoice->save();
 
@@ -158,26 +156,26 @@ class UserController extends BaseController
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
                 $data['amount'] = $invoice->amount;
-                $data['awardedPoint'] = $initialPoints;
-                $data['totalPoints'] = $points;
+                $data['awardedPoint'] = $points;
+                $data['totalPoints'] = $acc->point;
 
                 return $this->sendResponse($data, 'Accrued Points have been updated');
 
 
             }
             // Create a loyalty account if customer has none.
-            elseif ($acc->count() === 0) {
+            elseif ($acc === NULL) {
                 $points = $request->amount*($rule/100);
 
                 $acc = new Account();
-                $acc->user_id = $customer->id;
+                $acc->customer_id = $customer->id;
                 $acc->point = $points;
                 $acc->save();
 
                 // Save Invoice details.
                 $invoice = new Invoice();
                 $invoice->invoiceCode = $request->invoiceNum;
-                $invoice->user_id = $customerId;
+                $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
                 $invoice->save();
 
@@ -186,18 +184,106 @@ class UserController extends BaseController
                 $data['amount'] = $invoice->amount;
                 $data['points'] = $points;
                 // Send Email to group and SMS to customer.
-                return $this->sendResponse($data, 'Loyalty account created & Points added');
+                return $this->sendResponse($data, 'Loyalty account created & points awarded.');
 
             }
             else{
                 return response()->json(['error'=>'An error occured adding points'],500);
             }
 
-        return response()->json(['message'=>'No record for this customer'],404);
+      //  return response()->json(['message'=>'No record for this customer'],404);
 
     }
 
     public function makeClaims(Request $request){
+
+        $customerId = $request->id;
+        $invoiceNum = $request->invoiceNum;
+        $claim = request('claim',0);
+
+        //Check if invoice is already used.
+        $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
+
+        $customer = Customer::findorFail($customerId)->first();
+
+
+            if($invoice){
+                return $this->sendError('This invoice has been used');
+            }
+            $acc = Account::where('customer_id', $customerId)->first();
+            $loyaltyConfig = LoyaltySetting::where('status', 'ACTIVE')->first();
+            $rule = $loyaltyConfig->rule;
+
+            // Update loyalty points if customer is already registered.
+            if($acc){
+
+               // $initialPoints = $request->amount*($rule/100);
+                $points = $request->amount*($rule/100);
+                $totalPoints = $acc->point+=$points;
+                $balance = $totalPoints - $claim;
+
+                //Check if claim is more than accumulated points.
+                if($balance < 0){
+                    return $this->sendError('Your claims cannot be more than your accumulated points');
+                }
+                $acc->point = $balance;
+                $acc->update();
+
+                //Save Invoice details
+                $invoice = new Invoice();
+                $invoice->invoiceCode = $request->invoiceNum;
+                $invoice->customer_id = $customerId;
+                $invoice->amount = $request->amount;
+                $invoice->save();
+
+                //Send Email to group and SMS to customer.
+
+                $data['customerName'] = $customer->firstName.' '. $customer->lastName;
+                $data['customerPhone'] = $customer->phoneNum;
+                $data['amount'] = $invoice->amount;
+                $data['awardedPoint'] = $points;
+                $data['claims'] = $claim;
+                $data['balance'] = $balance;
+
+                return $this->sendResponse($data, 'Accrued Points have been updated');
+
+
+            }
+            // Create a loyalty account if customer has none.
+            elseif ($acc === NULL) {
+                // Get awarded points
+                $points = request('amount')*($rule/100);
+                $balance = $points - $claim;
+                if($balance < 0){
+                    return $this->sendError('Your claims cannot be more than your accumulated points');
+                }
+                $acc = new Account();
+                $acc->customer_id = $customer->id;
+                $acc->point = $balance;
+                $acc->save();
+
+                // Save Invoice details.
+                $invoice = new Invoice();
+                $invoice->invoiceCode = $request->invoiceNum;
+                $invoice->customer_id = $customerId;
+                $invoice->amount = $request->amount;
+                $invoice->save();
+
+                // Claim Table
+
+                $data['customerName'] = $customer->firstName.' '. $customer->lastName;
+                $data['customerPhone'] = $customer->phoneNum;
+                $data['amount'] = $invoice->amount;
+                $data['points'] = $points;
+                $data['claim'] = $claim;
+                $data['balance'] = $balance;
+                // Send Email to group and SMS to customer.
+                return $this->sendResponse($data, 'Loyalty account created & points awarded & your claims were successful.');
+
+            }
+            else{
+                return response()->json(['error'=>'An error occured adding or claiming points'],500);
+            }
 
 
 
@@ -205,7 +291,7 @@ class UserController extends BaseController
 
     public function getCustomerAccruedPoint(Request $request, $id){
         $id = $request->id;
-        $point = Account::where('user_id', $id)->first();
+        $point = Account::where('customer_id', $id)->first();
         return \response()->json(['message'=>$point],200);
 
     }
