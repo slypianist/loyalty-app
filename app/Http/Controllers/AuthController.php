@@ -119,6 +119,42 @@ class AuthController extends Controller
     */
 
 
+     /**
+     *
+     * Get a Rep JWT via given credentials.
+     *
+     *
+     *
+     * @return \Illuminate\Http\JsonResponse
+    */
+
+    public function repLogin(Request $request){
+        $credentials =     $this->validate($request,[
+                 'email' => 'required|email',
+                 'password' => 'required'
+             ]);
+
+             if(!$token = auth('rep')->attempt($credentials)){
+                 return response()->json(['error'=>'Invalid username or password'], 401);
+
+             }
+
+        return $this->respondWithToken($token);
+
+         }
+
+        /**
+          * Log the Partner out (Invalidate the token).
+          *
+          * @return \Illuminate\Http\JsonResponse
+        */
+    public function repLogout(){
+        auth('rep')->logout();
+        return response()->json(['message'=> 'Logout successful']);
+    }
+
+
+
     /**
      * Get the token array structure.
      *

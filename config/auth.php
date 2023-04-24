@@ -15,7 +15,12 @@ return [
         'admin' =>[
             'driver' => 'jwt',
             'provider' => 'admins'
-        ]
+        ],
+
+        'rep' =>[
+            'driver' => 'jwt',
+            'provider' => 'reps'
+        ],
     ],
 
     'providers' => [
@@ -27,6 +32,12 @@ return [
         'admins' =>[
             'driver' => 'eloquent',
             'model'  => \App\Models\Admin::class
+        ],
+
+        'reps' =>[
+            'driver' => 'eloquent',
+            'model' => \App\Models\Rep::class
+
         ]
     ]
 ];

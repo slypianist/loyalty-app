@@ -23,4 +23,8 @@ class Shop extends Model{
         return $this->belongsTo(User::class);
     }
 
+    public function rep(){
+        return $this->belongsTo(Rep::class);
+    }
+
 }

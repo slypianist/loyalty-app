@@ -8,12 +8,13 @@ use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\LoyaltyRule;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\LoyaltyAccount;
+use App\Models\LoyaltySetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\BaseController;
-use App\Models\LoyaltySetting;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends BaseController
@@ -124,6 +125,7 @@ class UserController extends BaseController
     public function addLoyaltyPoints(Request $request){
         $customerId = $request->id;
         $invoiceNum = $request->invoiceNum;
+        $partnerId = $request->partnerId;
 
         //Check if invoice is already used.
         $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
@@ -150,6 +152,15 @@ class UserController extends BaseController
                 $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
                 $invoice->save();
+
+                // Transaction
+                $trans = new Transaction();
+                $trans->customer_id = $customerId;
+                $trans->amount = $invoice->id;
+                $trans->partner_id = $partnerId;
+                $trans->shop_id = $request->shopId;
+                $trans->pointsAwarded = $points;
+                $trans->save();
 
                 //Send Email to group and SMS to customer.
 
@@ -178,6 +189,16 @@ class UserController extends BaseController
                 $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
                 $invoice->save();
+
+                // Transaction
+                $trans = new Transaction();
+                $trans->transId = "SH-". substr(md5(uniqid(rand(), true)),0,7);
+                $trans->customer_id = $customerId;
+                $trans->amount = $request->amount;
+                $trans->partner_id = $partnerId;
+                $trans->shop_id = $request->shopId;
+                $trans->pointsAwarded = $points;
+                $trans->save();
 
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
@@ -293,15 +314,6 @@ class UserController extends BaseController
         $id = $request->id;
         $point = Account::where('customer_id', $id)->first();
         return \response()->json(['message'=>$point],200);
-
-    }
-
-    public function dashboard(){
-        $data = [];
-        $data['totalCustomers'];
-        $data['totalShops'];
-        $data['totalClaims'];
-        $data['customers'];
 
     }
 

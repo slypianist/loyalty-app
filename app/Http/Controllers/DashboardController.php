@@ -11,16 +11,38 @@ class DashboardController extends Controller
      */
     public function __construct()
     {
-        //
+
     }
 
     public function adminDashboard(){
         $data['adminDetails'] = auth('admin')->user();
+        $data = [];
+        $data['totalCustomers'];
+        $data['totalShops'];
+        $data['totalClaims'];
+        $data['customers'];
 
 
     }
 
-    public function userDashboard(){
+    public function repDashboard(){
+        $data['adminDetails'] = auth('rep')->user();
+        $data = [];
+        $data['totalCustomers'];
+        $data['totalShops'];
+        $data['totalClaims'];
+        $data['customers'];
 
     }
+
+    public function partnerDashboard(){
+        $data['adminDetails'] = auth()->user();
+        $data = [];
+        $data['totalCustomers'];
+        $data['totalShops'];
+        $data['totalClaims'];
+        $data['customers'];
+
+    }
+
 }
