@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Customer;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomersController extends BaseController
 {
@@ -140,6 +141,15 @@ class CustomersController extends BaseController
         return $this->sendResponse($customer, 'Successful');
 
     }
+
+    public function getCustomerAccruedPoint(Request $request, $id){
+        $id = $request->id;
+        $point = Account::where('customer_id', $id)->first();
+        return $this->sendResponse($point, 'Accrued Points');
+
+    }
+
+
 
 
 }

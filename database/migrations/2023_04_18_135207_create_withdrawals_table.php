@@ -17,12 +17,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('shop_id');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+            $table->unsignedBigInteger('rep_id');
+            $table->foreign('rep_id')->references('id')->on('reps')->onUpdate('cascade');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
             $table->bigInteger('points_redeemed',true);
-            $table->enum('status',['PAID', 'NOT-PAID']);
+            $table->enum('status',['PAID', 'NOT-PAID'])->default('NOT-PAID');
             $table->timestamps();
         });
     }
