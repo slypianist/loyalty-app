@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('transId');
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('cascade');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+            $table->unsignedBigInteger('rep_id');
+            $table->foreign('rep_id')->references('id')->on('reps')->onUpdate('cascade');
             $table->unsignedBigInteger('transaction_id');
             $table->foreign('transaction_id')->references('id')->on('transactions')->onUpdate('cascade');
             $table->timestamps();
