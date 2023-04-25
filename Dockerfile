@@ -1,29 +1,19 @@
+# Use an official PHP runtime as a parent image
 FROM php:8.0-apache
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    libonig-dev \
-    libzip-dev \
-    unzip \
-    && docker-php-ext-install \
-    intl \
-    pdo_mysql \
-    zip
-
-# Set the working directory
+# Set the working directory to /var/www/html
 WORKDIR /var/www/html
 
-# Copy the app files to the working directory
-COPY . .
+# Copy the current directory contents into the container at /var/www/html
+COPY . /var/www/html
 
-# Install dependencies with Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-interaction --prefer-dist --no-scripts --no-dev
+# Install any needed packages
+RUN apt-get update && \
+    apt-get install -y git zip && \
+    docker-php-ext-install pdo_mysql
 
-# Set the permissions for the storage and bootstrap/cache directories
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
-
-# Expose port 80 for Apache
+# Expose port 80 to the outside world
 EXPOSE 80
+
+# Start the Apache server
+CMD ["apache2-foreground"]
