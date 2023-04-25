@@ -1,26 +1,28 @@
 version: '3'
-
 services:
-  web:
+  app:
     build: .
-    image: lumen-app
     ports:
-      - "8000:8000"
+      - "80:80"
+    environment:
+      - APP_ENV=production
+      - APP_KEY=your-app-key
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=your-database-name
+      - DB_USERNAME=your-database-username
+      - DB_PASSWORD=your-database-password
     volumes:
-      - .:/var/www/html
+      - ./:/app
     depends_on:
       - db
   db:
-    image: mysql:5.7
+    image: mysql:8.0
+    restart: always
     environment:
-      MYSQL_DATABASE: lumen
-      MYSQL_USER: lumen
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+      MYSQL_ROOT_PASSWORD: your-mysql-root-password
+      MYSQL_DATABASE: your-database-name
+      MYSQL_USER: your-database-username
+      MYSQL_PASSWORD: your-database-password
     ports:
-      - 8080:80
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: secret
+      - "3306:3306"
