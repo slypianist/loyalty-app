@@ -19,7 +19,7 @@ jobs:
     if: success()
     steps:
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v0.2.0
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: 45.33.19.65
           username: deployer
