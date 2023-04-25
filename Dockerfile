@@ -13,8 +13,8 @@ COPY . .
 RUN chmod -R 777 storage bootstrap/cache
 
 # Install composer dependencies
-curl -sS https://getcomposer.org/installer | php
- sudo mv composer.phar /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php
+RUN sudo mv composer.phar /usr/bin/composer
 # Expose port 80
 EXPOSE 80
 
