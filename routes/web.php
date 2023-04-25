@@ -18,7 +18,7 @@ use App\Http\Controllers\AdminController;
 */
 
 $router->get('/', function () use ($router) {
-    return response()->json(['app'=>$router->app->version()]);
+    return $router->app->version();
 });
 
 $router->get('key', function() use ($router){
