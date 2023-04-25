@@ -1,19 +1,30 @@
 # Use an official PHP runtime as a parent image
-FROM php:8.0-apache
+FROM php:8.0-fpm-alpine
 
-# Set the working directory to /var/www/html
-WORKDIR /var/www/html
+# Set the working directory to /app
+WORKDIR /app
 
-# Copy the current directory contents into the container at /var/www/html
-COPY . /var/www/html
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install any needed packages
-RUN apt-get update && \
-    apt-get install -y git zip && \
-    docker-php-ext-install pdo_mysql
+# Install any dependencies required by your app
+RUN apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        && pecl install xdebug \
+        && docker-php-ext-enable xdebug \
+        && apk del .build-deps
 
-# Expose port 80 to the outside world
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install app dependencies
+RUN composer install --no-dev --no-scripts --no-autoloader
+
+# Generate optimized autoloader
+RUN composer dump-autoload --no-dev --optimize
+
+# Expose port 80 to the Docker host
 EXPOSE 80
 
-# Start the Apache server
-CMD ["apache2-foreground"]
+# Run the application
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
