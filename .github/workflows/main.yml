@@ -22,7 +22,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: 45.33.19.65
-          username: deployer
+          username: sylvester
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
