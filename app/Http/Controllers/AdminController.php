@@ -126,7 +126,7 @@ class AdminController extends BaseController
             return $this->sendResponse($admin, 'Admin user updated successfully.');
 
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('Update failed', $th->getMessage());
+            return $this->sendError('Update failed.', $th->getMessage());
         }
     }
 
