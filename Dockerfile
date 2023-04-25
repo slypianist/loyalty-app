@@ -1,31 +1,23 @@
-FROM php:8.0-fpm
+FROM php:8.0-apache
 
-RUN apt-get update && \
-    apt-get install -y \
-        libzip-dev \
-        libpng-dev \
-        libjpeg-dev \
-        libfreetype6-dev \
-        zip \
-        unzip \
-        git \
-        && docker-php-ext-install pdo_mysql \
-        && docker-php-ext-install zip \
-        && docker-php-ext-configure gd --with-freetype --with-jpeg \
-        && docker-php-ext-install -j$(nproc) gd
+# Install required extensions
+RUN docker-php-ext-install pdo_mysql
 
-WORKDIR /app
-COPY . /app
+# Set document root
+WORKDIR /var/www/html
 
-RUN chmod -R 777 storage && \
-    chmod -R 777 bootstrap/cache && \
-    chown -R www-data:www-data /app
+# Copy app files to container
+COPY . .
 
-RUN curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Set permissions for storage and bootstrap directories
+RUN chmod -R 777 storage bootstrap/cache
 
-RUN composer install --prefer-dist --no-scripts --no-dev --no-autoloader && \
-    rm -rf ~/.composer/cache
+# Install composer dependencies
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
-RUN composer dump-autoload --no-scripts --no-dev --optimize
+# Expose port 80
+EXPOSE 80
 
-CMD ["php-fpm"]
+# Start Apache
+CMD ["apache2-foreground"]
