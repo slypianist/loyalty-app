@@ -23,7 +23,7 @@ jobs:
         with:
           host: 45.33.19.65
           username: sylvester
-          password: ${{ secrets.SSH_PASSWORD }}
+          password: Digital2023*+
           port: 22
           script: |
             rsync -avz --delete ./ sylvester@45.33.19.65:/home/sylvester/loyalty
