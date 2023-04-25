@@ -14,7 +14,7 @@ RUN chmod -R 777 storage bootstrap/cache
 
 # Install composer dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer2 install --no-interaction --no-dev --prefer-dist --optimize-autoloader
+RUN composer1 install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
 # Expose port 80
 EXPOSE 80
