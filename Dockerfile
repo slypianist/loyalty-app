@@ -10,7 +10,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Set permissions for storage and bootstrap directories
-RUN ["chmod", "-R", "777", "storage", "bootstrap/cache"]
+RUN chmod -R 777 storage bootstrap/cache
 
 # Install composer dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
