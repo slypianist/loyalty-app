@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: 🚀 Deploy on push master
 
 on:
   push:
@@ -6,24 +6,19 @@ on:
       - master
 
 jobs:
-  build:
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: 🚚 Get latest code
         uses: actions/checkout@v2
-      - name: Build Docker image
-        run: docker-compose build
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    if: success()
-    steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v0.1.10
+
+      - name: 📂 Deploy to server via ssh
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          host: 45.33.19.65
-          username: sylvester
-          password: Digital2023*+
-          port: 22
-          script: |
-            rsync -avz --delete ./ sylvester@45.33.19.65:/home/sylvester/loyalty
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: "cd /var/www/html && sh ./.scripts/deploy.sh"
