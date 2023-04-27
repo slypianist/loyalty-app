@@ -21,7 +21,6 @@ jobs:
     - name: Install dependencies using Composer
       run: composer install --no-dev
 
-
     - name: Copy Lumen app source code to VP server
       run: rsync -avz --delete --exclude '.git' ./ sylvester@45.33.19.65:/var/www/html/
 
