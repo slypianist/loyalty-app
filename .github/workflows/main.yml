@@ -1,4 +1,4 @@
-name: 🚀 Deploy on push master
+name: Deploy to VP server
 
 on:
   push:
@@ -6,19 +6,26 @@ on:
       - master
 
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: 📂 Deploy to server via ssh
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
-          script: cd /var/www/html && sh 'C:/Users/Sylvester Umole/lumen-api/.scripts/deploy.sh'
+    - name: Set up SSH connection to VP server
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Install dependencies using Composer
+      run: composer install --no-dev
+
+    - name: Run database migrations
+      run: php artisan migrate --force
+
+    - name: Copy Lumen app source code to VP server
+      run: rsync -avz --delete --exclude '.git' ./ sylvester@45.33.19.65:/var/www/html/
+
+    - name: Restart web server
+      run: sudo service apache2 restart
