@@ -26,4 +26,4 @@ jobs:
           SOURCE: ./ # This is the root directory of your application
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-          TARGET: ~/var/www/html/directory # Replace this with the path to your deployment directory on the remote server
+          TARGET: ~/var/www/html/lumen-api # Replace this with the path to your deployment directory on the remote server
