@@ -1,29 +1,29 @@
-name: Deploy to VP server
-
+name: Deploy Lumen app
 on:
   push:
     branches:
-      - master
-
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up SSH connection to VP server
-      uses: webfactory/ssh-agent@v0.5.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install dependencies
+        run: |
+          composer install
 
-    - name: Install dependencies using Composer
-      run: composer install --no-dev
+      - name: Build Lumen app
+        run: |
+          php artisan cache:clear
 
-    - name: Copy Lumen app source code to VP server
-      run: rsync -avz --delete --exclude '.git' ./ sylvester@45.33.19.65:/var/www/html/
-
-
-    - name: Restart web server
-      run: sudo service apache2 restart
+      - name: Deploy to server
+        uses: easingthemes/ssh-deploy@v2.3.3
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: -rltgoDzvO --delete
+          SOURCE: ./ # This is the root directory of your application
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
+          TARGET: /var/www/html/directory # Replace this with the path to your deployment directory on the remote server
