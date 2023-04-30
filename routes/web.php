@@ -5,6 +5,7 @@
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Logout;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,13 +30,20 @@ $router->get('key', function() use ($router){
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('admins/login', 'AuthController@adminLogin');
+    $router->post('reps/login', 'AuthController@repLogin');
 
     $router->post('partners/login', 'AuthController@partnerLogin');
+
+        // Reps Routes
+    $router->group(['middleware' => ['auth:rep']], function () use ($router) {
+
+        $router->post('reps/logout', 'AuthController@repLogout');
+});
 
             // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
             $router->get('partner/test', 'AuthController@getTest');
-            $router->post('user/logout', 'AuthController@partnerLogout');
+            $router->post('partners/logout', 'AuthController@partnerLogout');
     });
 
 
@@ -55,6 +63,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('partner/{id}', 'UserController@showPartner');
         $router->patch('partner/{id}', 'UserController@updatePartner');
         $router->delete('partner/{id}', 'UserController@deletePartner');
+
+        //Partners
+        $router->get('reps', 'RepController@index');
+        $router->post('rep', 'RepController@createRep');
+        $router->get('rep/{id}', 'RepController@showRep');
+        $router->patch('rep/{id}', 'RepController@updateRep');
+        $router->delete('rep/{id}', 'RepController@destroyRep');
 
         //Shops
 

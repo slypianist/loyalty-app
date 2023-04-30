@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\BaseController;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -16,10 +17,6 @@ class AuthController extends Controller
         //
     }
 
-     /**
-     * ==================Partners Authentication==================
-     *
-    */
 
     /**
      * Get a JWT via given credentials.
@@ -35,7 +32,7 @@ class AuthController extends Controller
        $credentials = $request->only('email', 'password');
 
             if(!$token = auth('admin')->attempt($credentials)){
-                return response()->json(['error'=>'Invalid username or password'],401);
+                return $this->sendError('Invalid username or password');
             }
 
             return $this->respondWithToken($token, $guard);
@@ -47,9 +44,8 @@ class AuthController extends Controller
 
     public function authAdmin(){
         $admin = auth('admin')->user();
-        return response()->json(['admin'=>$admin],200);
+        return $this->sendResponse($admin,true);
     }
-
 
     /**
      * Log the user out (Invalidate the token).
@@ -59,23 +55,8 @@ class AuthController extends Controller
 
     public function adminLogout(){
         auth('admin')->logout();
-        return response()->json(['message'=>'You have logged out successfully']);
+        return $this->sendResponse('Logged out successfully',200);
     }
-
-
-
-    public function getTest(){
-        return response()->json(['message'=>'Admin test is working']);
-       }
-
-
-    /**
-     *
-     * ==================Partners Authentication==================
-     *
-     *
-    */
-
 
     /**
      *
@@ -99,7 +80,12 @@ class AuthController extends Controller
 
         return $this->respondWithToken($token);
 
-         }
+    }
+
+    public function authPartner(){
+       $partner = auth()->user();
+       return $this->sendResponse($partner,true);
+    }
 
         /**
           * Log the Partner out (Invalidate the token).
@@ -108,16 +94,8 @@ class AuthController extends Controller
         */
     public function partnerLogout(){
         auth()->logout();
-        return response()->json(['message'=> 'Logout successful']);
+        return $this->sendResponse('Logged out successfully', 200);
     }
-
-    /**
-     *
-     * ================== End Authentication==================
-     *
-     *
-    */
-
 
      /**
      *
@@ -128,20 +106,25 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
     */
 
-    public function repLogin(Request $request){
+    public function repLogin(Request $request, $guard='rep'){
         $credentials =     $this->validate($request,[
                  'email' => 'required|email',
                  'password' => 'required'
              ]);
 
              if(!$token = auth('rep')->attempt($credentials)){
-                 return response()->json(['error'=>'Invalid username or password'], 401);
+                 return $this->sendError('Invalid credentials');
 
              }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $guard);
 
-         }
+    }
+
+    public function authRep(){
+        $rep =   auth('rep')->user();
+        return $this->sendResponse($rep,200);
+    }
 
         /**
           * Log the Partner out (Invalidate the token).
@@ -150,7 +133,7 @@ class AuthController extends Controller
         */
     public function repLogout(){
         auth('rep')->logout();
-        return response()->json(['message'=> 'Logout successful']);
+        return $this->sendResponse('Logged out successful',true);
     }
 
 

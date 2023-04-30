@@ -39,7 +39,7 @@ class RepController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function saveRep(Request $request){
+    public function createRep(Request $request){
 
         $validation = Validator::make($request->all(),[
             'firstName' => 'required',
@@ -58,7 +58,7 @@ class RepController extends BaseController
         ]);
 
         if($validation->fails()){
-            return $this->sendError('All required fields are compulsory.', $validation->errors());
+            return $this->sendError('Please required fields are compulsory.', $validation->errors());
         }
 
         $input = $request->all();
@@ -74,11 +74,15 @@ class RepController extends BaseController
        public function showRep($id){
         try {
             $rep = Rep::findOrFail($id);
-            return $this->sendResponse($rep, 'successful');
+
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Operation Failed', $th->getMessage());
         }
-       }
+        $center = $rep->shop();
+        $data['rep'] = $rep;
+        $data['center'] = $center;
+        return $this->sendResponse($data, 'successful');
+    }
 
 
     /**
@@ -103,7 +107,7 @@ class RepController extends BaseController
         ]);
 
         if($validation->fails()){
-            return $this->sendError('All required fields are compulsory', $validation->errors());
+            return $this->sendError('Please required fields are compulsory', $validation->errors());
         }
         $data = $request->all();
 
@@ -112,7 +116,7 @@ class RepController extends BaseController
 
         }else {
          $data =   $request->except('password');
-         dd($data);
+
         }
 
         try {
