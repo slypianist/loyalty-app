@@ -104,12 +104,13 @@ class RoleController extends BaseController
     }
 
     public function destroy($id){
-        try {
-         $role =   DB::table('roles')->where('id', $id)->delete();
-        } catch (ModelNotFoundException $th) {
-            $this->sendError('Operation failed.', $th->getMessage());
-        }
-      return $this->sendResponse($role, 'Role deleted successfully');
+         $role =   DB::table('roles')->where('id', $id)->first();
+         if($role){
+            $role->delete();
+            return $this->sendResponse($role, 'Role deleted successfully');
+         }else{
+            return $this->sendError('Operation failed. Invalid role ID');
+         }
 
     }
 
