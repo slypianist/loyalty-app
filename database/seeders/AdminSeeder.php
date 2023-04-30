@@ -21,6 +21,7 @@ class AdminSeeder extends Seeder
             'lastName' => 'Ajala',
             'email' => 'dayo@gmail.com',
             'dept' => 'IT/Monitoring',
+            'image' => 'default.png',
             'password' => Hash::make('password')
         ]);
     }

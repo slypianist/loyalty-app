@@ -105,6 +105,7 @@ $app->configure('app');
  $app->configure('permission');
  $app->alias('cache', \Illuminate\Cache\CacheManager::class);  // if you don't have this already
  $app->register(Spatie\Permission\PermissionServiceProvider::class);
+ $app->register(Illuminate\Mail\MailServiceProvider::class);
 
 
 

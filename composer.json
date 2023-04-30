@@ -6,6 +6,7 @@
     "type": "project",
     "require": {
         "php": "^8.0",
+        "illuminate/mail": "^9.52",
         "laravel/lumen-framework": "^9.0",
         "league/flysystem": "^3.14",
         "spatie/laravel-permission": "^5.10",

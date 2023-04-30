@@ -2,18 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UserFactory extends Factory
+class CustomerFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = User::class;
+    protected $model = Customer::class;
 
     /**
      * Define the model's default state.
@@ -22,13 +21,15 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $gender = $this->faker->randomElement(['male', 'female']);
         return [
-            'firstName' => $this->faker->firstname,
+            'firstName' => $this->faker->firstName,
             'lastName' => $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('password'),
-           'address' => $this->faker->streetAddress,
-           'phoneNum' =>$this->faker->phoneNumber
+            'phoneNum' => $this->faker->phoneNumber,
+            'address' => $this->faker->streetAddress,
+            'gender' => $gender,
+
         ];
     }
 }

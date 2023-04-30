@@ -21,9 +21,16 @@ class RoleController extends BaseController
     {
         //
     }
-    public function index(Request $request){
+    public function index(){
         $roles = Role::orderBy('id', 'ASC')->paginate(10);
-        return $this->sendResponse($roles, true);
+        if(count($roles) > 0){
+            return $this->sendResponse($roles, true);
+
+        }
+        else{
+            return $this->sendResponse(NULL, 'No record found');
+        }
+
     }
 
 
@@ -34,8 +41,9 @@ class RoleController extends BaseController
 
         ]);
        // dd($request->all());
-        $role = Role::create(['guard_name'=>'admin','name' => $request->input('name')]);
+
         try {
+            $role = Role::create(['guard_name'=>'admin','name' => $request->input('name')]);
             $role->syncPermissions($request->input('permissions'));
         } catch (PermissionDoesNotExist $th) {
             return $this->sendError('Permission does not exit', $th->getMessage());

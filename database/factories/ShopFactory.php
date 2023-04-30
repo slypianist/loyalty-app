@@ -2,18 +2,19 @@
 
 namespace Database\Factories;
 
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UserFactory extends Factory
+class ShopFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = User::class;
+    protected $model = Shop::class;
 
     /**
      * Define the model's default state.
@@ -23,12 +24,10 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'firstName' => $this->faker->firstname,
-            'lastName' => $this->faker->lastName,
-            'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('password'),
-           'address' => $this->faker->streetAddress,
-           'phoneNum' =>$this->faker->phoneNumber
+            'shopCode' => $this->faker->swiftBicNumber,
+            'name' => $this->faker->company(),
+            'address' => $this->faker->streetAddress,
+            'location' => $this->faker->city
         ];
     }
 }

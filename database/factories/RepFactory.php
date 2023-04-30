@@ -6,14 +6,14 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UserFactory extends Factory
+class RepFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = User::class;
+    protected $model = Rep::class;
 
     /**
      * Define the model's default state.
@@ -28,7 +28,8 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail,
             'password' => Hash::make('password'),
            'address' => $this->faker->streetAddress,
-           'phoneNum' =>$this->faker->phoneNumber
+           'phoneNum' =>$this->faker->phoneNumber,
+           'password' => Hash::make('password'),
         ];
     }
 }

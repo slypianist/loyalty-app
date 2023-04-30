@@ -6,12 +6,13 @@ use App\Models\Shop;
 
 use App\Models\Admin;
 use App\Models\Partner;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends BaseController
 {
@@ -67,10 +68,15 @@ class AdminController extends BaseController
         $input = $request->all();
    //     dd($input);
         $input['password'] = Hash::make($request->password);
+        try {
+            $admin =   Admin::create($input);
+        } catch (QueryException $th) {
+            return $this->sendError('Duplicate Entry detected. Email already exist');
+        }
 
-        $admin =   Admin::create($input);
+        $admin->assignRole($request->roles);
 
-        return $this->sendResponse($admin, 'Created successfully.');
+        return $this->sendResponse($admin, 'Record created successfully.');
 
        }
 
