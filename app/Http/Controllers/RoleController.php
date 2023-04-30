@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\BaseController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 use Spatie\Permission\Models\Permission;
 
 class RoleController extends BaseController
@@ -21,45 +22,47 @@ class RoleController extends BaseController
         //
     }
     public function index(Request $request){
-        $roles = Role::orderBy('id', 'ASC')->get();
-        return $this->sendResponse($roles, 'Successful');
-   //     return view('roles.index', compact('roles'))->with('i', ($request->input('page', 1)-1)*5);
+        $roles = Role::orderBy('id', 'ASC')->paginate(10);
+        return $this->sendResponse($roles, true);
     }
 
 
     public function store(Request $request){
-        $request->validate([
+        $this->validate($request, [
             'name' => 'required|unique:roles,name',
             'permissions' => 'required'
 
         ]);
+       // dd($request->all());
+        $role = Role::create(['guard_name'=>'admin','name' => $request->input('name')]);
+        try {
+            $role->syncPermissions($request->input('permissions'));
+        } catch (PermissionDoesNotExist $th) {
+            return $this->sendError('Permission does not exit', $th->getMessage());
+        }
 
-        $role = Role::create(['name' => $request->input('name')]);
-        $role->syncPermissions($request->input('permissions'));
         return $this->sendResponse($role, 'Role created successfully');
-      //  return redirect()->route('roles.index')->with('message', 'Role has been created');
     }
 
     public function show($id){
         try {
-            $role = Role::findorFail();
-        $rolePermissions = Permission::join("role_has_permissions","role_has_permissions.id", "=", "permission_id")
+            $role = Role::findorFail($id);
+        $rolePermissions = Permission::join("role_has_permissions","role_has_permissions.permission_id", "=", "permissions.id")
                                        ->where("role_has_permissions.role_id", $id)
                                        ->get();
         $result['role'] = $role;
         $result['rolePermissions'] = $rolePermissions;
        // return view('roles.show', compact('role', 'rolePermissions'));
-       return $this->sendResponse($result, 'Successful');
+       return $this->sendResponse($result, true);
         } catch (ModelNotFoundException $th) {
             $th->getMessage();
             $this->sendError('Error fetching roles', $th->getMessage());
 
         }
 
-
     }
 
-     public function editRoleDetails($id){
+     /* public function editRoleDetails($id){
         try {
             $data['role'] = Role::find($id);
         $data['permissions'] = Permission::get();
@@ -74,29 +77,39 @@ class RoleController extends BaseController
 
         }
 
-    }
+    } */
 
-    public function update(Request $request, Role $role){
-        $request->validate([
+    public function update(Request $request, $id){
+        $this->validate($request,[
             'name' => 'required',
             'permissions' => 'required',
 
         ]);
 
-      //  dd($request->all());
-        $role->syncPermissions($request->input('permissions'));
+        try {
+            $role = Role::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('No record for this query', $th->getMessage());
+        }
+            $role->name = $request->name;
+            $role->update();
+        try {
+            $role->syncPermissions($request->input('permissions'));
+        } catch (PermissionDoesNotExist $th) {
+            return $this->sendError('Just dey play. Permission does not exist', $th->getMessage());
+        }
 
-        return redirect()->route('roles.index')->with('message', 'role has been updated');
+        return $this->sendResponse($role, 'Role updated successfully');
+
     }
 
     public function destroy($id){
         try {
          $role =   DB::table('roles')->where('id', $id)->delete();
-            return $this->sendResponse($role, 'Deleted successfully');
         } catch (ModelNotFoundException $th) {
             $this->sendError('Operation failed.', $th->getMessage());
         }
-       // return redirect()->route('roles.index')->with('message', 'Role has been deleted successfully');
+      return $this->sendResponse($role, 'Role deleted successfully');
 
     }
 

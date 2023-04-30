@@ -64,7 +64,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->patch('partner/{id}', 'UserController@updatePartner');
         $router->delete('partner/{id}', 'UserController@deletePartner');
 
-        //Partners
+        //Reps
         $router->get('reps', 'RepController@index');
         $router->post('rep', 'RepController@createRep');
         $router->get('rep/{id}', 'RepController@showRep');
@@ -82,7 +82,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->delete('shop/{id}', 'ShopsController@destroyShop');
 
 
-        //Customer
+        //Customers
         $router->get('customer', 'CustomersController@index');
         $router->post('customer', 'CustomersController@createCustomer');
         $router->patch('customer/{id}', 'CustomersController@updateCustomer');
@@ -96,6 +96,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->patch('rule/{$id}', 'LoyaltySettingController@updateLoyaltyRule');
         $router->post('award/points', 'UserController@addLoyaltyPoints');
         $router->post('claim/points', 'UserController@makeClaims');
+
+        //Roles
+
+        $router->get('role', 'RoleController@index');
+        $router->post('role', 'RoleController@store');
+        $router->get('role/{id}', 'RoleController@show');
+        $router->patch('role/{id}', 'RoleController@update');
+        $router->delete('role/{id}', 'RoleController@destroy');
 
 
 
