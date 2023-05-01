@@ -50,6 +50,7 @@ class AdminController extends BaseController
             'lastName' => 'required',
             'email' => 'required|email',
             'password' => 'required|confirmed',
+            'roles'    => 'required'
         ],
 
         $messages = [
