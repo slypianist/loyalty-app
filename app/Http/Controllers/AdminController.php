@@ -33,7 +33,7 @@ class AdminController extends BaseController
      */
 
        public function index(){
-        $details['admin'] = Admin::orderBy('id', 'DESC')->paginate(2);
+        $details['admin'] = Admin::orderBy('id', 'ASC')->paginate(5);
         return $this->sendResponse($details, 'Successful');
 
        }
@@ -151,7 +151,5 @@ class AdminController extends BaseController
         }
 
        }
-
-
 
 }

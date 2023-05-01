@@ -35,6 +35,7 @@ class ShopsController extends BaseController
             'name' => 'required',
             'location' => 'required',
             'address' => 'required',
+            'shopCode' => 'required',
            // 'shopCode' => 'required'
         ],
         $messages=[
@@ -42,8 +43,8 @@ class ShopsController extends BaseController
         ]);
 
         $data = $request->all();
-        $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
-        //dd($data);
+       // $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
+        dd($data);
         $shop = Shop::create($data);
         return $this->sendResponse($shop, 'Shop created succesfully');
      //   return response()->json(['message'=>'Created successfully'],200);

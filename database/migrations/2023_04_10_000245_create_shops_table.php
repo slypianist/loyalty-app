@@ -17,10 +17,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('rep_id')->nullable();
+            $table->foreign('rep_id')->references('id')->on('reps')->onDelete('cascade');
             $table->string('shopCode');
             $table->string('name');
             $table->string('address')->nullable();
-            $table->string('location');
+            $table->string('location')->nullable();
             $table->enum('status',['ASSIGNED', 'UNASSIGNED'])->default('UNASSIGNED');
             $table->timestamps();
         });
