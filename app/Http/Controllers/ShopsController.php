@@ -44,7 +44,7 @@ class ShopsController extends BaseController
 
         $data = $request->all();
        // $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
-        dd($data);
+      //  dd($data);
         $shop = Shop::create($data);
         return $this->sendResponse($shop, 'Shop created succesfully');
      //   return response()->json(['message'=>'Created successfully'],200);
