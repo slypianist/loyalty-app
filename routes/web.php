@@ -97,6 +97,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('award/points', 'UserController@addLoyaltyPoints');
         $router->post('claim/points', 'UserController@makeClaims');
 
+        // Permission
+
+        $router->get('permissions', 'PermissionController@getPermission');
+
         //Roles
 
         $router->get('role', 'RoleController@index');

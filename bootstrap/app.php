@@ -86,6 +86,8 @@ $app->configure('app');
     'role'       => Spatie\Permission\Middlewares\RoleMiddleware::class,
 ]);
 
+$app->middleware([    App\Http\Middleware\CorsMiddleware::class]);
+
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers
