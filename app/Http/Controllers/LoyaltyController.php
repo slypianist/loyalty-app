@@ -113,7 +113,9 @@ class LoyaltyController extends BaseController
                 $data['customerPhone'] = $customer->phoneNum;
                 $data['amount'] = $invoice->amount;
                 $data['points'] = $points;
+
                 // Send Email to group and SMS to customer.
+
                 return $this->sendResponse($data, 'Loyalty account created & points awarded.');
 
             }

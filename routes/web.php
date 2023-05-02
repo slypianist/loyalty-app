@@ -23,14 +23,11 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('key', function() use ($router){
-    return Str::random(32);
-
-});
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('admins/login', 'AuthController@adminLogin');
     $router->post('reps/login', 'AuthController@repLogin');
+    $router->get('tests', 'TestController@index');
 
     $router->post('partners/login', 'AuthController@partnerLogin');
 
