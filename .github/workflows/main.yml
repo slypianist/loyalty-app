@@ -17,7 +17,6 @@ jobs:
       - name: Build Lumen app
         run: |
           php artisan cache:clear
-          scp .env.production sylvester@198.58.106.95:/var/www/cap-api/.env
 
       - name: Deploy to server
         uses: easingthemes/ssh-deploy@v4.1.8
@@ -28,3 +27,5 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server..
+          run: |
+            scp .env.production sylvester@198.58.106.95:/var/www/cap-api/.env
