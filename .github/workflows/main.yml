@@ -28,4 +28,4 @@ jobs:
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server..
           run: |
-            scp .env.production sylvester@198.58.106.95:/var/www/cap-api/.env
+            scp .env.production sylvester@198.58.106.95:/var/www/html/cap-api/.env
