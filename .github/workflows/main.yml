@@ -27,3 +27,6 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server..
+          - name: Copy .env file
+            run: |
+              scp -r C:/Users/"Sylvester Umole"/lumen-api/.env.production sylvester@server:/var/www/html/cap-api/.env
