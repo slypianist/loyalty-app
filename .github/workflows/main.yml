@@ -27,3 +27,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server..
+      - name: Copy production environment file to deployment environment
+        run: |
+          ssh user@deployment-server "mkdir -p /var/www/html/cap-api/.env"
+          rsync -avz -e ssh /c/Users/"Sylvester Umole"/lumen-api/.env.production sylvester@198.58.106.95:/var/www/html/cap-api/.env
