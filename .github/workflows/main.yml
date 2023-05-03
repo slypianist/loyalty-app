@@ -28,6 +28,5 @@ jobs:
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server..
           SCRIPT_AFTER: |
-            mkdir -p /var/www/html/cap-api/
-            scp /c/Users/"Sylvester Umole"/lumen-api/.env.production sylvester@198.58.106.95:/var/www/html/cap-api/
+            cp /var/www/html/.env.production /var/www/html/cap-api/
             echo $RSYNC_STDOUT
