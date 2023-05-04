@@ -18,10 +18,6 @@ jobs:
         run: |
           php artisan cache:clear
 
-      - name: Set permissions
-        run: |
-          chmod -R 777 storage
-
       - name: Deploy to server
         uses: easingthemes/ssh-deploy@v4.1.8
         env:
