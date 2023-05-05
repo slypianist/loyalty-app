@@ -31,7 +31,7 @@ class UserController extends BaseController
     }
 
     public function index(){
-        $partner = User::orderBy('id', 'ASC')->paginate(5);
+        $partner = User::orderBy('id', 'ASC')->paginate(500);
         if ($partner->count() == NULL) {
             return $this->sendResponse($partner, 'No records');
         }
@@ -123,6 +123,8 @@ class UserController extends BaseController
         return $this->sendResponse($partner, 'Record successfully deleted.');
 
     }
+
+
 
 
 }

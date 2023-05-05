@@ -22,7 +22,7 @@ class RoleController extends BaseController
         //
     }
     public function index(){
-        $roles = Role::orderBy('id', 'ASC')->paginate(10);
+        $roles = Role::orderBy('id', 'ASC')->get();
         if(count($roles) > 0){
             return $this->sendResponse($roles, true);
 

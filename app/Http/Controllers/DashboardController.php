@@ -14,16 +14,16 @@ class DashboardController extends Controller
 
     }
 
-    public function adminDashboard(){
-        $data['adminDetails'] = auth('admin')->user();
-        $data = [];
-        $data['totalCustomers'];
-        $data['totalShops'];
-        $data['totalClaims'];
-        $data['customers'];
+    public function totalModels(){
+
+        $data['totalCustomer'] = 0;
+        $data['totalCenter'] = 0;
+        $data['totalPartner'] = 0;
+        $data['customers']  = 0;
 
 
     }
+
 
     public function repDashboard(){
         $data['adminDetails'] = auth('rep')->user();
