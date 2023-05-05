@@ -119,6 +119,7 @@ class UserController extends BaseController
             return $this->sendError('You cannot delete a partner that is currently assigned to a shop(s).');
         }
 
+        $partner->delete();
         return $this->sendResponse($partner, 'Record successfully deleted.');
 
     }

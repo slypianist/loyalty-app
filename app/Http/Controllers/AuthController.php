@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends BaseController
 {
@@ -44,6 +45,7 @@ class AuthController extends BaseController
 
     public function authAdmin(){
         $admin = auth('admin')->user();
+
         return $this->sendResponse($admin,true);
     }
 
@@ -147,10 +149,14 @@ class AuthController extends BaseController
     */
     protected function respondWithToken($token, $guard=''){
 
+        $user = auth($guard)->user();
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'user' => auth($guard)->user(),
+            'user' => $user,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions(),
             'expires_in' => auth('admin')->factory()->getTTL() * 60
         ]);
 
