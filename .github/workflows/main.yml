@@ -27,6 +27,8 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server..
+          SCRIPT_BEFORE: |
+            chown -R sylvester: /var/www/html/cap-api
           SCRIPT_AFTER: |
             chown -R sylvester: /var/www/html/cap-api
             chmod -R u+w /var/www/html/cap-api
