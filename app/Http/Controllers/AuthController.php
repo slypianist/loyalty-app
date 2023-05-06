@@ -36,7 +36,7 @@ class AuthController extends BaseController
                 return $this->sendError('Invalid username or password');
             }
 
-            return $this->respondWithToken($token, $guard);
+            return $this->getToken($token, $guard);
     }
 
     public function refresh(){
@@ -155,11 +155,25 @@ class AuthController extends BaseController
             'access_token' => $token,
             'token_type' => 'bearer',
             'user' => $user,
-            'roles' => $user->getRoleNames(),
-            'permissions' => $user->getAllPermissions(),
-            'expires_in' => auth('admin')->factory()->getTTL() * 60
+            'expires_in' => auth($guard)->factory()->getTTL() * 60
         ]);
 
-       }
+    }
+
+    protected function getToken($token, $guard='admin'){
+        $user = auth($guard)->user();
+        return response()->json([
+
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'user' => $user,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions(),
+            'expires_in' => auth($guard)->factory()->getTTL() * 60
+        ]);
+
+    }
+
+
 
 }

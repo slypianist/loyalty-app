@@ -22,13 +22,13 @@ class RoleController extends BaseController
         //
     }
     public function index(){
-        $roles = Role::orderBy('id', 'ASC')->get();
+        $roles = Role::all();
         if(count($roles) > 0){
             return $this->sendResponse($roles, true);
 
         }
         else{
-            return $this->sendResponse(NULL, 'No record found');
+            return $this->sendResponse(NULL, 'No role(s) record found or created.');
         }
 
     }
@@ -112,8 +112,9 @@ class RoleController extends BaseController
     }
 
     public function destroy($id){
-         $role =   DB::table('roles')->where('id', $id)->first();
+         $role =   Role::where('id', $id)->first();
          if($role){
+
             $role->delete();
             return $this->sendResponse($role, 'Role deleted successfully');
          }else{

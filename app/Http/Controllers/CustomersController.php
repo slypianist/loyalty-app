@@ -20,8 +20,8 @@ class CustomersController extends BaseController
     }
 
     public function index(){
-        $customer = Customer::orderBy('id', 'DESC')->paginate(5);
-       return $this->sendResponse($customer, 'All customers');
+        $customer = Customer::all();
+       return $this->sendResponse($customer, 'All registered customers');
 
     }
 
@@ -82,7 +82,7 @@ class CustomersController extends BaseController
            return $this->sendError('An error occured', $th->getMessage());
         }
             $customer->update($input);
-            return $this->sendResponse($customer, 'Successful');
+            return $this->sendResponse($customer, 'Customer record updated successful');
 
     }
 
@@ -95,7 +95,7 @@ class CustomersController extends BaseController
            return $this->sendError('An error Occurred', $th->getMessage());
         }
         $customer->delete();
-        return $this->sendResponse($customer, 'Customer deleted successfully');
+        return $this->sendResponse($customer, 'Customer record deleted successfully');
 
       //  return response()->json(['message'=>'Customer deleted successfully'],200);
 

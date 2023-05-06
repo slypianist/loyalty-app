@@ -28,6 +28,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('admins/login', 'AuthController@adminLogin');
     $router->post('reps/login', 'AuthController@repLogin');
     $router->get('tests', 'TestController@index');
+    $router->get('dashboard/card/stats', 'DashboardController@cardStats');
 
     $router->post('partners/login', 'AuthController@partnerLogin');
 

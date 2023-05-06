@@ -29,7 +29,10 @@ class RepController extends BaseController
      */
 
        public function index(){
-        $details['rep'] = Rep::orderBy('id', 'DESC')->paginate(2);
+        $details['rep'] = Rep::all();
+        if(count($details['rep'])==NULL){
+            return $this->sendResponse('No center reps have been registered.',200);
+        }
         return $this->sendResponse($details, 'Successful');
 
        }

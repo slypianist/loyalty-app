@@ -23,9 +23,9 @@ class ShopsController extends BaseController
     }
 
     public function index(){
-        $shops = Shop::orderBy('id', 'ASC')->paginate(10);
-       // return $this->sendResponse($shops, 200);
-        return response()->json(['shops'=>$shops]);
+        $data['shops'] = Shop::all();;
+        $data['total'] = $data['shops']->count();
+        return $this->sendResponse($data, 'All registered centers');
     }
 
     // Save a shop

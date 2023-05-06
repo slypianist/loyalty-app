@@ -2,7 +2,15 @@
 
 namespace App\Http\Controllers;
 
-class DashboardController extends Controller
+use App\Models\Shop;
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\Customer;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\BaseController;
+use Spatie\Permission\Models\Permission;
+
+class DashboardController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -14,18 +22,28 @@ class DashboardController extends Controller
 
     }
 
-    public function totalModels(){
+    public function cardStats(){
+        $data['totalCustomer']  =  Customer::count();
+        $data['totalCenter'] = Shop::count();
+        $data['totalPartner'] = User::count();
+        $data['totalAdmin'] = Admin::count();
+        $data['totalRoles'] = Role::count();
+        $data['totalPermissions'] = Permission::count();
 
-        $data['totalCustomer'] = 0;
-        $data['totalCenter'] = 0;
-        $data['totalPartner'] = 0;
-        $data['customers']  = 0;
+        return $this->sendResponse($data, true);
+
+    }
+
+    public function graphStats(){
 
 
     }
 
 
-    public function repDashboard(){
+    public function repCardStats(){
+        $id = auth('rep')->user()->id;
+
+        $data['totalCustomer'] = Cust
         $data['adminDetails'] = auth('rep')->user();
         $data = [];
         $data['totalCustomers'];

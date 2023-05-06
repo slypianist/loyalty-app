@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\BaseController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 
 class UserController extends BaseController
 {
@@ -31,11 +32,12 @@ class UserController extends BaseController
     }
 
     public function index(){
-        $partner = User::orderBy('id', 'ASC')->paginate(500);
-        if ($partner->count() == NULL) {
-            return $this->sendResponse($partner, 'No records');
+        $data['partner'] = User::all();
+        if ($data['partner']->count() == NULL) {
+            return $this->sendResponse($data, 'No records');
         }
-        return $this->sendResponse($partner, 'Successful');
+        $data['total'] = $data['partner']->count();
+        return $this->sendResponse($data, 'Successful');
 
     }
 
@@ -60,10 +62,14 @@ class UserController extends BaseController
             $data = $request->except('password');
         }
 
-        $data = $request->all();
-      $user =  User::create($data);
+       try {
+        $user =  User::create($data);
+       } catch (QueryException $th) {
+        return $this->sendError('Error: Duplicate entry detected');
+       }
+
         return $this->sendResponse($user, 'Partner created successfully');
-       // return response()->json(['message'=>'Partner created successfully.']);
+
     }
 
 
@@ -82,7 +88,9 @@ class UserController extends BaseController
        ->select('users.firstName AS firstName', 'users.lastName AS lastName', 'users.address AS address',
              'users.phoneNum AS phoneNumber', 'users.email AS email')
         ->get();
-        $data['assignedShops'] = Shop::where('user_id', $partner->id)->get();
+        $data['assignedShops'] = Shop::where('user_id', $partner->id)
+                                 ->select('shopCode', 'name', 'address', 'location', 'status')
+                                ->get();
 
         return $this->sendResponse($data, 'Successful');
 
@@ -105,7 +113,7 @@ class UserController extends BaseController
         }
         $partner->update($data);
 
-        return $this->sendResponse($partner, 'Update successful');
+        return $this->sendResponse($partner, ' Record update successfully');
 
     }
 
