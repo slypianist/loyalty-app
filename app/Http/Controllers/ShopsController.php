@@ -48,7 +48,7 @@ class ShopsController extends BaseController
        // $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
       //  dd($data);
         $shop = Shop::create($data);
-        return $this->sendResponse($shop, 'Shop created succesfully');
+        return $this->sendResponse($shop, 'Center created succesfully');
      //   return response()->json(['message'=>'Created successfully'],200);
 
     }
@@ -110,7 +110,7 @@ class ShopsController extends BaseController
         }else{
             // Delete shop
             $shop->delete();
-            return $this->sendResponse($shop, 'Shop deleted successfully');
+            return $this->sendResponse($shop, 'Center deleted successfully');
 
         }
 
@@ -138,7 +138,7 @@ class ShopsController extends BaseController
         $shop->status1 = "ASSIGNED-TO-PARTNER";
         $shop->save();
 
-        return response()->json(['status'=>200,'message'=>'Shop: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName]);
+        return response()->json(['status'=>200,'message'=>'Center: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName]);
 
     }
 
@@ -175,7 +175,7 @@ class ShopsController extends BaseController
 
         }
 
-        return $this->sendError('Not allowed. Shop is not assigned to any partner');
+        return $this->sendError('Not allowed. Center is not assigned to any partner');
 
     }
         /**
@@ -196,6 +196,10 @@ class ShopsController extends BaseController
             return $this->sendError('An error occurred', $th->getMessage());
 
         }
+        if($shop->status2==='ASSIGNED-TO-REP'){
+            return $this->sendError('Error: Center is already assigned');
+
+        }
 
         $shop->rep()->associate($rep)->save();
         $shop->status2 = "ASSIGNED-TO-REP";
@@ -204,9 +208,9 @@ class ShopsController extends BaseController
         // Activities Table;
      $admin =   auth('admin')->user();
 
-    Log::info("$admin->firstName $admin->lastName assigned shop: $shop->name to $rep->lastName $rep->firstName");
+    Log::info("$admin->firstName $admin->lastName assigned center: $shop->name to $rep->lastName $rep->firstName");
 
-        return $this->sendResponse('Shop:'.$shop->name.' is now assigned to '. $rep->lastName.' '. $rep->firstName, 'successful');
+        return $this->sendResponse('Center:'.$shop->name.' is now assigned to '. $rep->lastName.' '. $rep->firstName, 'successful');
 
     }
 
@@ -248,7 +252,7 @@ class ShopsController extends BaseController
 
         }
 
-        return $this->sendError('Not allowed. Shop is not assigned to any rep');
+        return $this->sendError('Not allowed. Center is not assigned to any rep');
 
     }
 
