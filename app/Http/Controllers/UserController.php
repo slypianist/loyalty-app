@@ -89,7 +89,7 @@ class UserController extends BaseController
              'users.phoneNum AS phoneNumber', 'users.email AS email')
         ->get();
         $data['assignedShops'] = Shop::where('user_id', $partner->id)
-                                 ->select('shopCode', 'name', 'address', 'location', 'status')
+                                 ->select('shopCode', 'name', 'address', 'location', 'status1')
                                 ->get();
 
         return $this->sendResponse($data, 'Successful');

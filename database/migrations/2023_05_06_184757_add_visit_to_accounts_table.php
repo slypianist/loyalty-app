@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->bigInteger('visit');
+        Schema::table('accounts', function (Blueprint $table) {
+            $table->bigInteger('visit')->default(0);
         });
     }
 

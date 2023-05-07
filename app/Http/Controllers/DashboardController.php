@@ -43,7 +43,7 @@ class DashboardController extends BaseController
     public function repCardStats(){
         $id = auth('rep')->user()->id;
 
-        $data['totalCustomer'] = Cust
+        $data['totalCustomer']=0;
         $data['adminDetails'] = auth('rep')->user();
         $data = [];
         $data['totalCustomers'];

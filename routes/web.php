@@ -75,6 +75,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('shop', 'ShopsController@createShop');
         $router->post('/shop/assign', 'ShopsController@assignShop');
         $router->post('/shop/unassign', 'ShopsController@unassignShop');
+        $router->post('/shop/assign/rep', 'ShopsController@assignShopToRep');
+        $router->post('/shop/unassign/rep', 'ShopsController@unassignShopToRep');
         $router->get('shop/{id}', 'ShopsController@showShop');
         $router->patch('shop/{id}', 'ShopsController@updateShop');
         $router->delete('shop/{id}', 'ShopsController@destroyShop');

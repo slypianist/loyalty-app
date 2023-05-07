@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rep;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -133,12 +135,12 @@ class ShopsController extends BaseController
         }
 
         $shop->user()->associate($partner);
-        $shop->status = "ASSIGNED";
+        $shop->status1 = "ASSIGNED-TO-PARTNER";
         $shop->save();
 
         return response()->json(['status'=>200,'message'=>'Shop: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName]);
 
-       }
+    }
 
     /**
      * Unassign a shop to a partner.
@@ -156,7 +158,7 @@ class ShopsController extends BaseController
 
         }
         // Check shop status
-        if($shop->status === 'ASSIGNED'){
+        if($shop->status1 === 'ASSIGNED-TO-PARTNER'){
             $partnerId = $shop->user_id;
 
             try {
@@ -167,7 +169,7 @@ class ShopsController extends BaseController
             }
             // Unassign shop.
             $shop->user()->dissociate($partner);
-            $shop->status = "UNASSIGNED";
+            $shop->status1 = "UNASSIGNED";
             $shop->save();
             return response()->json(['message'=>$shop->name.' Unassigned from '. $partner->lastName]);
 
@@ -175,6 +177,79 @@ class ShopsController extends BaseController
 
         return $this->sendError('Not allowed. Shop is not assigned to any partner');
 
-       }
+    }
+        /**
+     * Unassign a shop to a rep.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+       public function assignShopToRep(Request $request){
+
+        $repId = $request->repId;
+        $shopId = $request->shopId;
+
+        try {
+           $rep = Rep::where('id', $repId)->firstOrFail();
+           $shop = Shop::where('id', $shopId)->firstOrFail();
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+
+        }
+
+        $shop->rep()->associate($rep)->save();
+        $shop->status2 = "ASSIGNED-TO-REP";
+        $shop->save();
+
+        // Activities Table;
+     $admin =   auth('admin')->user();
+
+    Log::info("$admin->firstName $admin->lastName assigned shop: $shop->name to $rep->lastName $rep->firstName");
+
+        return $this->sendResponse('Shop:'.$shop->name.' is now assigned to '. $rep->lastName.' '. $rep->firstName, 'successful');
+
+    }
+
+    /**
+     * Unassign a shop from a rep.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+     public function unassignShopToRep(Request $request){
+        $shopId = $request->id;
+
+        try {
+            $shop = Shop::findOrFail($shopId);
+
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred', $th->getMessage());
+
+        }
+        // Check shop status
+        if($shop->status2 === 'ASSIGNED-TO-REP'){
+            $repId = $shop->rep_id;
+
+            try {
+                $rep = Rep::findorFail($repId);
+            } catch (ModelNotFoundException $th) {
+                return $this->sendError('An error occurred', $th->getMessage());
+
+            }
+            // Unassign shop.
+            $shop->rep()->dissociate($rep);
+            $shop->status2 = "UNASSIGNED";
+            $shop->save();
+
+            // Activities table
+            $admin =   auth('admin')->user();
+            Log::info("$admin->firstName $admin->lastName unassigned shop: $shop->name from $rep->lastName $rep->firstName");
+            return $this->sendResponse($shop->name.' Unassigned from '. $rep->firstName, 'Successful');
+
+        }
+
+        return $this->sendError('Not allowed. Shop is not assigned to any rep');
+
+    }
 
 }

@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rep;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
+use App\Models\Shop;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RepController extends BaseController
 {
@@ -33,6 +34,7 @@ class RepController extends BaseController
         if(count($details['rep'])==NULL){
             return $this->sendResponse('No center reps have been registered.',200);
         }
+        $details['total'] = $details['rep']->count();
         return $this->sendResponse($details, 'Successful');
 
        }
@@ -70,20 +72,22 @@ class RepController extends BaseController
 
         $rep =   Rep::create($input);
 
-        return $this->sendResponse($rep, 'Created successfully.');
+        return $this->sendResponse($rep, 'Rep created successfully.');
 
        }
 
        public function showRep($id){
         try {
-            $rep = Rep::findOrFail($id);
+            $rep = Rep::find($id)->first();
+
 
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Operation Failed', $th->getMessage());
         }
-        $center = $rep->shop();
         $data['rep'] = $rep;
-        $data['center'] = $center;
+        $data['center'] = Shop::where('rep_id', $id)
+                            ->select('id','shopCode', 'name', 'address')
+                            ->get();
         return $this->sendResponse($data, 'successful');
     }
 
