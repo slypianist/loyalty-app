@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('rep_id')->references('id')->on('reps')->onUpdate('cascade');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
-            $table->double('points_redeemed',10,2);
+            $table->double('pointsRedeemed',10,2);
             $table->enum('status',['PAID', 'NOT-PAID'])->default('NOT-PAID');
             $table->timestamps();
         });

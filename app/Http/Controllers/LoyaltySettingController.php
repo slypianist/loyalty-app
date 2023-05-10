@@ -21,11 +21,11 @@ class LoyaltySettingController extends BaseController
         //
     }
 
-   /*  public function index(){
-        $rule = Setting::all()->get(5);
-        return response()->json(['rule'=>$rule]);
+    public function index(){
+        $rule = LoyaltySetting::all();
+        return $this->sendResponse($rule, 'successful.');
 
-    } */
+    }
 
     public function addLoyaltyRule(Request $request){
 
@@ -39,7 +39,7 @@ class LoyaltySettingController extends BaseController
     public function getLoyaltyRule(){
 
         try {
-            $rule = LoyaltySetting::firstOrFail();
+            $rule = LoyaltySetting::where('status', 'ACTIVE')->get();
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error fetching rule.', $th->getMessage());
         }
@@ -62,6 +62,16 @@ class LoyaltySettingController extends BaseController
 
         return $this->sendResponse($data, 'Loyalty rule updated successful.');
 
+    }
+
+    public function destroyLoyaltyRule($id){
+        try {
+            $data = LoyaltySetting::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('An error occurred.');
+        }
+        $data->delete();
+        return $this->sendResponse($data, 'Rule deleted successfully.');
     }
 
 

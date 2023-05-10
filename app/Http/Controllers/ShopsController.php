@@ -25,7 +25,7 @@ class ShopsController extends BaseController
     }
 
     public function index(){
-        $data['shops'] = Shop::all();;
+        $data['shops'] = Shop::all();
         $data['total'] = $data['shops']->count();
         return $this->sendResponse($data, 'All registered centers');
     }
@@ -63,9 +63,10 @@ class ShopsController extends BaseController
         }
         $data['shopDetails'] =  DB::table('shops')
                         ->join('users', 'shops.user_id', '=', 'users.id')
+                        ->leftJoin('reps', 'shops.rep_id', '=', 'reps.id')
                         ->where('shops.id', '=', $shop->id)
-                        ->select('shops.id AS shopID', 'shops.location AS shopLocation', 'shops.name AS shopName', 'shops.address AS shopAddress', 'shops.code AS shopCodeName',
-                        'users.firstName AS partnerFirstName', 'users.lastName AS partnerLastName')
+                        ->select('shops.id AS shopID', 'shops.location AS shopLocation', 'shops.name AS shopName', 'shops.address AS shopAddress', 'shops.shopCode AS Code',
+                        'users.firstName AS partnerFirstName', 'users.lastName AS partnerLastName', 'reps.firstName AS repName')
                         ->get();
 
         return $this->sendResponse($data,200);
@@ -135,7 +136,7 @@ class ShopsController extends BaseController
         }
 
         $shop->user()->associate($partner);
-        $shop->status1 = "ASSIGNED-TO-PARTNER";
+        $shop->status = "ASSIGNED-TO-PARTNER";
         $shop->save();
 
         return response()->json(['status'=>200,'message'=>'Center: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName]);
@@ -158,7 +159,7 @@ class ShopsController extends BaseController
 
         }
         // Check shop status
-        if($shop->status1 === 'ASSIGNED-TO-PARTNER'){
+        if($shop->status === 'ASSIGNED-TO-PARTNER'){
             $partnerId = $shop->user_id;
 
             try {
@@ -169,7 +170,7 @@ class ShopsController extends BaseController
             }
             // Unassign shop.
             $shop->user()->dissociate($partner);
-            $shop->status1 = "UNASSIGNED";
+            $shop->status = "UNASSIGNED";
             $shop->save();
             return response()->json(['message'=>$shop->name.' Unassigned from '. $partner->lastName]);
 

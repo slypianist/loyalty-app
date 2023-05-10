@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('address')->nullable();
             $table->string('location')->nullable();
-            $table->enum('status1',['ASSIGNED-TO-PARTNER', 'UNASSIGNED'])->default('UNASSIGNED');
+            $table->enum('status',['ASSIGNED-TO-PARTNER', 'UNASSIGNED'])->default('UNASSIGNED');
             $table->enum('status2',['ASSIGNED-TO-REP', 'UNASSIGNED'])->default('UNASSIGNED');
             $table->timestamps();
         });

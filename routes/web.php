@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Logout;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LoyaltySettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,12 +30,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('reps/login', 'AuthController@repLogin');
     $router->get('tests', 'TestController@index');
     $router->get('dashboard/card/stats', 'DashboardController@cardStats');
+    $router->get('dashboard/bar/stats', 'DashboardController@graphStats');
 
     $router->post('partners/login', 'AuthController@partnerLogin');
 
         // Reps Routes
     $router->group(['middleware' => ['auth:rep']], function () use ($router) {
 
+        //Award and claim loyalty points.
+        $router->post('award/points', 'LoyaltyController@addLoyaltyPoints');
+        $router->post('claim/points', 'LoyaltyController@makeClaims');
         $router->post('reps/logout', 'AuthController@repLogout');
 });
 
@@ -70,7 +75,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->delete('rep/{id}', 'RepController@destroyRep');
 
         //Shops
-
         $router->get('shop', 'ShopsController@index');
         $router->post('shop', 'ShopsController@createShop');
         $router->post('/shop/assign', 'ShopsController@assignShop');
@@ -81,7 +85,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->patch('shop/{id}', 'ShopsController@updateShop');
         $router->delete('shop/{id}', 'ShopsController@destroyShop');
 
-
         //Customers
         $router->get('customer', 'CustomersController@index');
         $router->post('customer', 'CustomersController@createCustomer');
@@ -91,29 +94,23 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('customer/{id}', 'CustomersController@getCustomer');
 
         // Loyalty Points
+        $router->get('rules', 'LoyaltySettingController@index');
         $router->get('rule', 'LoyaltySettingController@getLoyaltyRule');
         $router->post('rule', 'LoyaltySettingController@addLoyaltyRule');
-        $router->patch('rule/{$id}', 'LoyaltySettingController@updateLoyaltyRule');
-        $router->post('award/points', 'UserController@addLoyaltyPoints');
-        $router->post('claim/points', 'UserController@makeClaims');
+        $router->patch('rule/{id}', 'LoyaltySettingController@updateLoyaltyRule');
+        $router->delete('rule/{id}', 'LoyaltySettingController@destroyLoyaltyRule');
+
 
         // Permission
-
         $router->get('permissions', 'PermissionController@getPermission');
 
         //Roles
-
         $router->get('role', 'RoleController@index');
         $router->post('role', 'RoleController@store');
         $router->get('role/{id}', 'RoleController@show');
         $router->patch('role/{id}', 'RoleController@update');
         $router->delete('role/{id}', 'RoleController@destroy');
 
-
-
-
     });
-
-
 
 });

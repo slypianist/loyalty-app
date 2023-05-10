@@ -20,9 +20,12 @@ return new class extends Migration
             $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('cascade');
             $table->unsignedBigInteger('rep_id');
             $table->foreign('rep_id')->references('id')->on('reps')->onUpdate('cascade');
-            $table->unsignedBigInteger('transaction_id');
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onUpdate('cascade');
+            $table->unsignedBigInteger('shop_id');
+            $table->foreign('shop_id')->references('id')->on('shops')->onUpdate('cascade');
+            $table->double('amount',12,2);
+            $table->bigInteger('awardedPoints');
             $table->timestamps();
+
         });
     }
 
