@@ -38,10 +38,10 @@ class DashboardController extends BaseController
         $data['totalRoles'] = Role::count();
         $data['totalPermissions'] = Permission::count();
         $data['totalRep'] = Rep::count();
-        $data['totalAP'] ;
+        /* $data['totalAP'] ;
         $data['totalVisits'] ;
         $data['totalClaimed'];
-        $data['totalUnclaimed'];
+        $data['totalUnclaimed']; */
 
 
         return $this->sendResponse($data, true);
