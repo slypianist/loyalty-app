@@ -26,22 +26,16 @@ class DashboardController extends BaseController
 
     public function cardStats(){
 
-
-
-
-
-
+        $totalAP = DB::table('transactions')->sum('awardedPoints');
+        $totalClaim = DB::table('withdrawals')->sum('pointsRedeemed');
         $data['totalCustomer']  =  Customer::count();
         $data['totalCenter'] = Shop::count();
         $data['totalPartner'] = User::count();
-        $data['totalAdmin'] = Admin::count();
-        $data['totalRoles'] = Role::count();
-        $data['totalPermissions'] = Permission::count();
         $data['totalRep'] = Rep::count();
-        /* $data['totalAP'] ;
-        $data['totalVisits'] ;
-        $data['totalClaimed'];
-        $data['totalUnclaimed']; */
+        $data['totalVisits']  = DB::table('accounts')->sum('visit');
+        $data['totalAP'] = $totalAP;
+        $data['totalClaimed'] = $totalClaim;
+        $data['totalUnclaimed'] =  $totalAP - $totalClaim;
 
 
         return $this->sendResponse($data, true);
