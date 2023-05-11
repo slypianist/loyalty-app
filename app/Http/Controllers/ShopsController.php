@@ -130,7 +130,7 @@ class ShopsController extends BaseController
 
         try {
            $partner = User::where('id', $partnerId)->first();
-           dd($partner);
+
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Partner does not exist', $th->getMessage());
 
