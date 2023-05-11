@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Logout;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LoyaltySettingController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +111,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('role/{id}', 'RoleController@show');
         $router->patch('role/{id}', 'RoleController@update');
         $router->delete('role/{id}', 'RoleController@destroy');
+
+        //Reports
+        $router->get('transactions', 'ReportController@getTransactions');
+        $router->get('withdrawals', 'ReportController@getClaims');
+        $router->get('activity', 'ReportController@getActivities');
 
     });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Rep;
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\Activity;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -135,11 +136,19 @@ class ShopsController extends BaseController
 
         }
 
+        //Assign shop to partner
         $shop->user()->associate($partner);
         $shop->status = "ASSIGNED-TO-PARTNER";
         $shop->save();
 
-        return response()->json(['status'=>200,'message'=>'Center: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName]);
+        // Save Audit
+        $admin =   auth('admin')->user();
+        $info =$admin->firstName. ' '. $admin->lastName. ' assigned center: '. $shop->name.' to '. $partner->lastName. ' '. $partner->firstName;
+        $activity = new Activity();
+        $activity->description = $info;
+        $activity->save();
+
+        return $this->sendResponse('Center: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName, 'successful');
 
     }
 
@@ -172,7 +181,14 @@ class ShopsController extends BaseController
             $shop->user()->dissociate($partner);
             $shop->status = "UNASSIGNED";
             $shop->save();
-            return response()->json(['message'=>$shop->name.' Unassigned from '. $partner->lastName]);
+
+            //Save audit
+            $admin =   auth('admin')->user();
+            $info =$admin->firstName. ' '. $admin->lastName. ' unassigned center: '. $shop->name.' from '. $partner->lastName. ' '. $partner->firstName;
+            $activity = new Activity();
+            $activity->description = $info;
+            $activity->save();
+            return $this->sendResponse($shop->name.' Unassigned from '. $partner->lastName, 'Successful');
 
         }
 
@@ -207,9 +223,11 @@ class ShopsController extends BaseController
         $shop->save();
 
         // Activities Table;
-     $admin =   auth('admin')->user();
-
-    Log::info("$admin->firstName $admin->lastName assigned center: $shop->name to $rep->lastName $rep->firstName");
+        $admin =   auth('admin')->user();
+        $info =$admin->firstName. ' '. $admin->lastName. ' assigned center: '. $shop->name.' to '. $rep->lastName. ' '. $rep->firstName;
+        $activity = new Activity();
+        $activity->description = $info;
+        $activity->save();
 
         return $this->sendResponse('Center:'.$shop->name.' is now assigned to '. $rep->lastName.' '. $rep->firstName, 'successful');
 
@@ -248,7 +266,11 @@ class ShopsController extends BaseController
 
             // Activities table
             $admin =   auth('admin')->user();
-            Log::info("$admin->firstName $admin->lastName unassigned shop: $shop->name from $rep->lastName $rep->firstName");
+            $info = $admin->firstName. ' '. $admin->lastName.' unassigned shop: '. $shop->name. 'from'. $rep->lastName.' '. $rep->firstName;
+            $activity = new Activity();
+            $activity->description = $info;
+            $activity->save();
+
             return $this->sendResponse($shop->name.' Unassigned from '. $rep->firstName, 'Successful');
 
         }

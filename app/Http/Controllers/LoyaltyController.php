@@ -165,19 +165,18 @@ class LoyaltyController extends BaseController
         $repName = auth('rep')->user()->firstName;
         $claim = request('claim',0);
 
-        $result = DB::table('shops')->where('id', $shopId)
+        // Check if rep is assigned to shop.
+        $result = DB::table('shops')->where('shops.id', $shopId)
                                     ->join('reps', 'reps.id', '=', 'shops.rep_id')
-                                    ->get();
-        dd($result);
-        // Check if rep is assigned to shop
-     //   $result = Shop::where('rep_id', $repId)->get();
+                                    ->count();
 
         //Check if invoice is already used.
         $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
 
+        // Get customer's details.
         $customer = Customer::findorFail($customerId);
 
-        if($result->count() == NULL){
+        if($result == NULL){
             return $this->sendError('Operation failed. Center is not assigned to rep: '.$repName);
         }
 
@@ -222,14 +221,17 @@ class LoyaltyController extends BaseController
                 $withdrawal->pointsRedeemed = $claim;
                 $withdrawal->save();
 
-                //Send Email to group and SMS to customer.
-
+                // Get details
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
                 $data['amount'] = $invoice->amount;
                 $data['awardedPoint'] = $points;
                 $data['claims'] = $claim;
                 $data['balance'] = $balance;
+
+                //Send Email to group and SMS to customer.
+
+                //Log transactions to Activity table
 
                 return $this->sendResponse($data, 'Accrued Points have been updated');
 
@@ -246,7 +248,7 @@ class LoyaltyController extends BaseController
                 $acc = new Account();
                 $acc->customer_id = $customer->id;
                 $acc->point = $balance;
-                $acc->visit = $acc->visit++;
+                $acc->visit = $acc->visit+1;
                 $acc->save();
 
                 // Save Invoice details.
@@ -271,7 +273,9 @@ class LoyaltyController extends BaseController
                 $data['points'] = $points;
                 $data['claim'] = $claim;
                 $data['balance'] = $balance;
+
                 // Send Email to group and SMS to customer.
+
                 return $this->sendResponse($data, 'Loyalty account created & points awarded & your claims were successful.');
 
             }
