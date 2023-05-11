@@ -8,4 +8,8 @@ class LoyaltySetting extends Model{
 
 public $timeStamps =false;
 
+protected $fillable = ['name', 'rule', 'status'];
+
+
+
 }
