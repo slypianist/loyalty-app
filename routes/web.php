@@ -53,7 +53,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         //Admins
-        $router->get('admin/test', 'AuthController@getTest');
         $router->post('admin/logout', 'AuthController@adminLogout');
         $router->get('admin', 'AdminController@index');
         $router->post('admin', 'AdminController@saveAdmin');

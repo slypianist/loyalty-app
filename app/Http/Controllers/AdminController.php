@@ -33,7 +33,7 @@ class AdminController extends BaseController
      */
 
        public function index(){
-        $details['admin'] = Admin::all();
+        $details['admin'] = Admin::orderBy('id', 'DESC')->get();
         return $this->sendResponse($details, 'Successful');
 
        }
@@ -84,10 +84,13 @@ class AdminController extends BaseController
        public function showAdmin($id){
         try {
             $admin = Admin::findOrFail($id);
-            return $this->sendResponse($admin, 'successful');
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Operation Failed', $th->getMessage());
         }
+        $data['admin'] = $admin;
+        $data['role'] = $admin->getRoleNames();
+
+        return $this->sendResponse($data, 'successful');
        }
 
 
@@ -102,6 +105,8 @@ class AdminController extends BaseController
             'firstName' => 'required',
             'lastName' => 'required',
             'email' => 'required|email',
+            'roles' => 'required',
+            'dept' => 'required',
 
         ],
 
@@ -123,18 +128,17 @@ class AdminController extends BaseController
 
         }else {
          $data =   $request->except('password');
-         dd($data);
         }
 
         try {
             $admin = Admin::findOrFail($id);
 
-            $admin->update($data);
-            return $this->sendResponse($admin, 'Admin user updated successfully.');
-
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Update failed.', $th->getMessage());
         }
+        $admin->update($data);
+        $admin->syncRoles($request->input('roles'));
+        return $this->sendResponse($admin, 'Admin user updated successfully.');
     }
 
     /**
