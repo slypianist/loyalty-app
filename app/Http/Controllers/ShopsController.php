@@ -130,10 +130,15 @@ class ShopsController extends BaseController
 
         try {
            $partner = User::where('id', $partnerId)->firstOrFail();
-           $shop = Shop::where('id', $shopId)->firstOrFail();
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('An error occurred', $th->getMessage());
+            return $this->sendError('Partner does not exist', $th->getMessage());
 
+        }
+
+        try {
+            $shop = Shop::where('id', $shopId)->firstOrFail();
+        } catch (ModelNotFoundException $th) {
+           return $this->sendError('Shop not found.', $th->getMessage());
         }
 
         //Assign shop to partner
