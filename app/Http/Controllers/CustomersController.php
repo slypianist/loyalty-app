@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomersController extends BaseController
@@ -110,15 +111,23 @@ class CustomersController extends BaseController
     public function getCustomer(Request $request, $id){
        // $phone = $request->phone;
         try {
-            $customer = Customer::where('id', $id);
-            $points = $customer->loyaltyaccount();
-            $data['customerDetails'] = $customer;
-            $data['customerPoints'] = $points;
+            $customer = Customer::where('id', $id)->first();
+
         } catch (ModelNotFoundException $e) {
            $e->getMessage();
            return $this->sendError('An error has occured', $e->getMessage());
-           //return response()->json(['No record found.']);
         }
+        $points = $customer->account;
+
+        $data['customerDetails'] = $customer;
+    //
+        $data['history'] = DB::table('transactions')
+                            ->where('transactions.customer_id', '=', $customer->id)
+                            ->get();
+
+        $data['claimsHistory'] = DB::table('withdrawals')
+                            ->where('withdrawals.customer_id', '=', $customer->id)
+                            ->get();
 
             return $this->sendResponse($data, 'Customer details with points');
        // return response()->json(['customer'=>$data],200);

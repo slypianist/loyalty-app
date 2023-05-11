@@ -22,7 +22,7 @@ class LoyaltySettingController extends BaseController
     }
 
     public function index(){
-        $rule = LoyaltySetting::all();
+        $rule = LoyaltySetting::orderBy('id', 'DESC')->get();
         return $this->sendResponse($rule, 'successful.');
 
     }
@@ -56,9 +56,10 @@ class LoyaltySettingController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occured', $th->getMessage());
         }
-            $data->name = $request->name;
-            $data->rule = $request->rule;
-            $data->update();
+
+            $input = $request->all();
+
+            $data->update($input);
 
         return $this->sendResponse($data, 'Loyalty rule updated successful.');
 

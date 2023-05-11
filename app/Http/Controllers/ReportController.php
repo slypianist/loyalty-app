@@ -37,7 +37,7 @@ class ReportController extends BaseController
                         ->join('reps', 'reps.id', '=', 'transactions.rep_id')
                         ->join('shops', 'shops.id', '=', 'transactions.shop_id')
                         ->select('transactions.id as id', 'transactions.amount AS amount', 'transactions.awardedPoints AS points', 'customers.firstName AS customerFirstName', 'customers.lastname AS customerLastName',
-                                'shops.name AS shop', 'shops.address AS address', 'reps.firstName AS repFirstName', 'reps.lastName AS repsLastName')
+                                'shops.name AS shop', 'shops.address AS address', 'reps.firstName AS repFirstName', 'reps.lastName AS repsLastName', 'transactions.created_at AS transactionTime')
                         ->orderByDesc('transactions.id')
                         ->get();
         return $this->sendResponse($transactions, 'All awarded points transactions');
