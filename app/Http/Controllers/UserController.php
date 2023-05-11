@@ -83,13 +83,17 @@ class UserController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occurred', $th->getMessage());
         }
+
+        // Get a single partner entity.
         $data['partner'] =  DB::table('users')
         ->where('users.id', $id)
-       ->select('users.firstName AS firstName', 'users.lastName AS lastName', 'users.address AS address',
+       ->select('users.id','users.firstName AS firstName', 'users.lastName AS lastName', 'users.address AS address',
              'users.phoneNum AS phoneNumber', 'users.email AS email')
         ->get();
+
+        // Get Assigned Shops...
         $data['assignedShops'] = Shop::where('user_id', $partner->id)
-                                 ->select('shopCode', 'name', 'address', 'location', 'status1')
+                                 ->select('id','shopCode', 'name', 'address', 'location', 'status')
                                 ->get();
 
         return $this->sendResponse($data, 'Successful');

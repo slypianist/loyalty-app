@@ -62,12 +62,19 @@ class ShopsController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occurred', $th->getMessage());
         }
-        $data['shopDetails'] =  DB::table('shops')
-                        ->join('users', 'shops.user_id', '=', 'users.id')
-                        ->leftJoin('reps', 'shops.rep_id', '=', 'reps.id')
+        $data['info'] =  DB::table('shops')
                         ->where('shops.id', '=', $shop->id)
-                        ->select('shops.id AS shopID', 'shops.location AS shopLocation', 'shops.name AS shopName', 'shops.address AS shopAddress', 'shops.shopCode AS Code',
-                        'users.firstName AS partnerFirstName', 'users.lastName AS partnerLastName', 'reps.firstName AS repName')
+                        ->select('shops.id AS shopID', 'shops.location AS shopLocation', 'shops.name AS shopName', 'shops.address AS shopAddress', 'shops.shopCode AS Code',)
+                        ->get();
+
+        $data['assignedPartner'] = DB::table('users')
+                        ->where('users.id', '=', $shop->user_id)
+                        ->select('users.id','users.firstName', 'users.lastName', 'users.phoneNum', 'users.email', 'users.address')
+                        ->get();
+
+        $data['assignedRep'] = DB::table('reps')
+                        ->where('reps.id', '=', $shop->rep_id)
+                        ->select('reps.id','reps.firstName', 'reps.lastName', 'reps.phoneNum', 'reps.email', 'reps.address')
                         ->get();
 
         return $this->sendResponse($data,200);

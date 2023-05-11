@@ -46,7 +46,7 @@ class ReportController extends BaseController
 
 
         public function getActivities(){
-            $activity = Activity::all();
+            $activity = Activity::orderBy('id', 'DESC')->get();
 
             return $this->sendResponse($activity, 'Activities');
 
