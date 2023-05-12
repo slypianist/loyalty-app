@@ -78,7 +78,7 @@ class RepController extends BaseController
 
        public function showRep($id){
         try {
-            $rep = Rep::find($id)->first();
+            $rep = Rep::findOrFail($id);
 
 
         } catch (ModelNotFoundException $th) {

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('shop_id');
             $table->foreign('shop_id')->references('id')->on('shops')->onUpdate('cascade');
             $table->double('amount',12,2);
-            $table->bigInteger('awardedPoints');
+            $table->double('awardedPoints',12,2);
             $table->timestamps();
 
         });
