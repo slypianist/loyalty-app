@@ -44,12 +44,16 @@ class PermissionSeeder extends Seeder
             'update-admin',
             'delete-admin',
 
-            // Shop Permission
+            // Center Permission
             'list-centers',
             'create-center',
             'view-center',
             'update-center',
             'delete-center',
+            'assign-center-partner',
+            'unassign-center-partner',
+            'assign-center-rep',
+            'unassign-center-rep',
 
             //Role
             'list-roles',

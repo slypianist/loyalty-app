@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Shop;
 use App\Models\Account;
 use App\Models\Invoice;
+use App\Mail\AwardPoint;
 use App\Models\Customer;
 use App\Models\Withdrawal;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\LoyaltySetting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\BaseController;
 
 class LoyaltyController extends BaseController
@@ -42,10 +44,10 @@ class LoyaltyController extends BaseController
 
 
         // Check if rep is assigned to shop
-        $result = Shop::where('rep_id', $repId)->get();
-       // dd($result);
+        $center = Shop::where('rep_id', $repId)->first();
+       // dd($center->name);
 
-        if($result->count() == NULL){
+        if($center->count() == NULL){
             return $this->sendError('Operation failed. Center is not assigned to rep: '.$repName);
         }
 
@@ -92,13 +94,17 @@ class LoyaltyController extends BaseController
                 $trans->awardedPoints = $points;
                 $trans->save();
 
-                //Send Email to group and SMS to customer.
 
+                //Get transaction details.
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
                 $data['amountPurchased'] = $invoice->amount;
                 $data['awardedPoint'] = $points;
+                $data['center'] = $center->name;
                 $data['totalPoints'] = $acc->point;
+
+                //Send Email to group and SMS to customer.
+                Mail::to($customer->email)->send(new AwardPoint($data));
 
                 return $this->sendResponse($data, 'Accrued Points have been updated');
 
@@ -111,7 +117,7 @@ class LoyaltyController extends BaseController
                 $acc = new Account();
                 $acc->customer_id = $customer->id;
                 $acc->point = $points;
-                $acc->visit = $acc->visit++;
+                $acc->visit = $acc->visit+1;
                 $acc->save();
 
                 // Save Invoice details.
@@ -133,10 +139,13 @@ class LoyaltyController extends BaseController
 
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
-                $data['amount'] = $invoice->amount;
-                $data['points'] = $points;
+                $data['amountPurchased'] = $invoice->amount;
+                $data['awardedPoint'] = $points;
+                $data['center'] = $center->name;
+                $data['totalPoints'] = $acc->point;
 
                 // Send Email to group and SMS to customer.
+                Mail::to($customer->email)->send(new AwardPoint($data));
 
                 return $this->sendResponse($data, 'Loyalty account created & points awarded.');
 
@@ -166,7 +175,7 @@ class LoyaltyController extends BaseController
         $claim = request('claim',0);
 
         // Check if rep is assigned to shop.
-        $result = DB::table('shops')->where('shops.id', $shopId)
+        $center = DB::table('shops')->where('shops.id', $shopId)
                                     ->join('reps', 'reps.id', '=', 'shops.rep_id')
                                     ->count();
 
@@ -176,7 +185,7 @@ class LoyaltyController extends BaseController
         // Get customer's details.
         $customer = Customer::findorFail($customerId);
 
-        if($result == NULL){
+        if($center == NULL){
             return $this->sendError('Operation failed. Center is not assigned to rep: '.$repName);
         }
 
@@ -275,6 +284,7 @@ class LoyaltyController extends BaseController
                 $data['balance'] = $balance;
 
                 // Send Email to group and SMS to customer.
+
 
                 return $this->sendResponse($data, 'Loyalty account created & points awarded & your claims were successful.');
 

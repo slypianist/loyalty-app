@@ -139,17 +139,20 @@ class ShopsController extends BaseController
            $partner = User::where('id', $partnerId)->first();
 
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('Partner does not exist', $th->getMessage());
+            return $this->sendError('Partner does not exist in our records.', $th->getMessage());
 
         }
 
         try {
             $shop = Shop::where('id', $shopId)->firstOrFail();
         } catch (ModelNotFoundException $th) {
-           return $this->sendError('Shop not found.', $th->getMessage());
+           return $this->sendError('Center not found in our records.', $th->getMessage());
         }
 
-        //Assign shop to partner
+        //Check if center is already assigned to another partner.
+
+        if($shop->partner_id = NULL){
+            //Assign shop to partner
         $shop->user()->associate($partner);
         $shop->status = "ASSIGNED-TO-PARTNER";
         $shop->save();
@@ -162,6 +165,12 @@ class ShopsController extends BaseController
         $activity->save();
 
         return $this->sendResponse('Center: '.$shop->name.' is now assigned to '. $partner->lastName.' '. $partner->firstName, 'successful');
+
+        }else{
+
+            return $this->sendError('Center is already assigned to another partner');
+        }
+
 
     }
 
@@ -279,7 +288,7 @@ class ShopsController extends BaseController
 
             // Activities table
             $admin =   auth('admin')->user();
-            $info = $admin->firstName. ' '. $admin->lastName.' unassigned shop: '. $shop->name. 'from'. $rep->lastName.' '. $rep->firstName;
+            $info = $admin->firstName. ' '. $admin->lastName.' unassigned shop: '. $shop->name. 'from '. $rep->lastName.' '. $rep->firstName;
             $activity = new Activity();
             $activity->description = $info;
             $activity->save();

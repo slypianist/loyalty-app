@@ -34,6 +34,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('dashboard/bar/stats', 'DashboardController@graphStats');
 
     $router->post('partners/login', 'AuthController@partnerLogin');
+    $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
 
         // Reps Routes
     $router->group(['middleware' => ['auth:rep']], function () use ($router) {
@@ -90,7 +91,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('customer', 'CustomersController@createCustomer');
         $router->patch('customer/{id}', 'CustomersController@updateCustomer');
         $router->delete('customer/{id}', 'CustomersController@destroyCustomer');
-        $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
         $router->get('customer/{id}', 'CustomersController@getCustomer');
 
         // Loyalty Points
