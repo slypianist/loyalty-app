@@ -151,7 +151,7 @@ class ShopsController extends BaseController
 
         //Check if center is already assigned to another partner.
 
-        if($shop->partner_id = NULL){
+        if($shop->user_id === NULL){
             //Assign shop to partner
         $shop->user()->associate($partner);
         $shop->status = "ASSIGNED-TO-PARTNER";

@@ -141,12 +141,19 @@ class CustomersController extends BaseController
     public function getCustomerPhoneNum(Request $request){
         $phone = $request->phoneNum;
 
-        try {
-            $customer = Customer::where('phoneNum', $phone)->firstorFail();
-        } catch (ModelNotFoundException $th) {
-            return $this->sendError('No match found for this record.', $th->getMessage());
 
-        }
+           // $customer = Customer::where('phoneNum', $phone)->firstorFail();
+        $customer = DB::table('customers')
+                                ->where('customers.phoneNum', '=', $phone)
+                                ->leftJoin('accounts', 'accounts.customer_id', '=', 'customers.id')
+                                ->select('customers.id As id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', 'customers.phoneNum AS phoneNum','customers.address AS address',
+                                'customers.gender AS gender','customers.status AS status', 'accounts.point AS point', 'accounts.visit AS visit')
+                                ->get();
+            if($customer->count()==NULL){
+                return $this->sendError('No match found in our record(s).');
+
+            }
+
         return $this->sendResponse($customer, 'Successful');
 
     }
