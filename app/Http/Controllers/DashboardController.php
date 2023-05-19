@@ -88,7 +88,7 @@ class DashboardController extends BaseController
         ->select('customers.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', DB::raw('SUM(transactions.awardedPoints) as points'))
         ->groupBy('customers.id', 'customers.firstName', 'customers.lastName')
         ->orderByDesc('points')
-        ->take(5)
+       // ->take(5)
         ->get();
 
         return $this->sendResponse($topAccruer, 'successful');
@@ -96,10 +96,11 @@ class DashboardController extends BaseController
     }
 
         public function topRedeemed(){
-            $topRedeemed = DB::table('withdrawals')
-                                ->join('customers', 'customers.id', '=', 'withdrawals.customer_id')
-                                ->select('withdrawals.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', 'withdrawals.pointsRedeemed AS points')
-                                ->orderByDesc('withdrawals.pointsRedeemed')
+            $topRedeemed = DB::table('customers')
+                                ->join('withdrawals', 'customers.id', '=', 'withdrawals.customer_id')
+                                ->select('customers.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', DB::raw('SUM(withdrawals.pointsRedeemed) as points'))
+                                ->groupBy('customers.id', 'customers.firstName', 'customers.lastName')
+                                ->orderByDesc('points')
                                 ->take(5)
                                 ->get();
 
@@ -108,7 +109,6 @@ class DashboardController extends BaseController
     }
 
         public function topUnclaimed(){
-
             $topUnclaimed = DB::table('accounts')
                                 ->join('customers', 'customers.id', '=', 'accounts.customer_id')
                                 ->select('accounts.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName','accounts.point AS points',)
