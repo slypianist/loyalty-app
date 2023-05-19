@@ -83,12 +83,13 @@ class DashboardController extends BaseController
     }
 
     public function topAccruer(){
-        $topAccruer = DB::table('accounts')
-                                ->join('customers', 'customers.id', '=', 'accounts.customer_id')
-                                ->select('accounts.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName','accounts.point AS points',)
-                                ->orderByDesc('accounts.point')
-                                ->take(5)
-                                ->get();
+        $topAccruer = DB::table('customers')
+        ->join('transactions', 'customers.id', '=', 'transactions.customer_id')
+        ->select('customers.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', DB::raw('SUM(transactions.awardedPoints) as points'))
+        ->groupBy('customers.id', 'customers.firstName', 'customers.lastName')
+        ->orderByDesc('points')
+        ->take(5)
+        ->get();
 
         return $this->sendResponse($topAccruer, 'successful');
 
@@ -130,6 +131,8 @@ class DashboardController extends BaseController
             return $this->sendResponse($topVisit, 'successful');
 
     }
+
+    //public function topCenter
 
 
     public function repCardStats(){
