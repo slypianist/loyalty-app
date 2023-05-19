@@ -130,7 +130,6 @@ class CustomersController extends BaseController
                             ->get();
 
             return $this->sendResponse($data, 'Customer details with points');
-       // return response()->json(['customer'=>$data],200);
     }
 
     /**
