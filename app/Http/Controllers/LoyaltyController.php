@@ -14,6 +14,7 @@ use App\Models\LoyaltySetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\BaseController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LoyaltyController extends BaseController
 {
@@ -35,6 +36,20 @@ class LoyaltyController extends BaseController
      * @return \Illuminate\Http\JsonResponse
      */
     public function addLoyaltyPoints(Request $request){
+        $this->validate($request,[
+            'shopId' => 'required',
+            'invoiceNum' => 'required',
+            'amount' => 'required',
+            'id' => 'required'
+
+        ],
+        $messages = [
+            'shopId.required' => 'Center ID is not provided.',
+            'invoiceNum.required' => 'Invoice number is not provided.',
+            'amount.required' => 'Amount purchased is not provided.',
+            'id.required' => 'Customer ID is not provided'
+        ]
+    );
 
         $customerId = $request->id;
         $invoiceNum = $request->invoiceNum;
@@ -54,10 +69,12 @@ class LoyaltyController extends BaseController
         //Check if invoice is already used.
         $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
 
-        $customer = Customer::findorFail($customerId);
+        try {
+            $customer = Customer::findorFail($customerId);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('Invalid customer identifier given.');
 
-
-
+        }
             if($invoice){
                 return $this->sendError('This invoice has been used.');
             }
@@ -166,6 +183,21 @@ class LoyaltyController extends BaseController
      */
 
     public function makeClaims(Request $request){
+
+        $this->validate($request,[
+            'shopId' => 'required',
+            'invoiceNum' => 'required',
+            'amount' => 'required',
+            'id' => 'required'
+
+        ],
+        $messages = [
+            'shopId.required' => 'Center ID is not provided.',
+            'invoiceNum.required' => 'Invoice number is not provided.',
+            'amount.required' => 'Amount purchased is not provided.',
+            'id.required' => 'Customer ID is not provided'
+        ]
+    );
 
         $customerId = $request->id;
         $invoiceNum = $request->invoiceNum;
