@@ -136,7 +136,7 @@ class ShopsController extends BaseController
         $shopId = $request->shopId;
 
         try {
-           $partner = User::where('id', $partnerId)->first();
+           $partner = User::where('id', $partnerId)->firstOrFail();
 
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Partner not found in our records.', $th->getMessage());
@@ -150,7 +150,6 @@ class ShopsController extends BaseController
         }
 
         //Check if center is already assigned to another partner.
-
         if($shop->user_id === NULL){
             //Assign shop to partner
         $shop->user()->associate($partner);
@@ -214,7 +213,7 @@ class ShopsController extends BaseController
 
         }
 
-        return $this->sendError('Not allowed. Center is not assigned to any partner');
+        return $this->sendError('Not allowed. Center is not assigned to partner');
 
     }
         /**
@@ -232,9 +231,14 @@ class ShopsController extends BaseController
            $rep = Rep::where('id', $repId)->firstOrFail();
            $shop = Shop::where('id', $shopId)->firstOrFail();
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('An error occurred', $th->getMessage());
+            return $this->sendError('An error occurred.', $th->getMessage());
 
         }
+
+        $shopRep = Shop::where('rep_id', $repId)->first();
+
+        if($shopRep === NULL){
+            //check if center is already assigned to a rep
         if($shop->status2==='ASSIGNED-TO-REP'){
             return $this->sendError('Error: Center is already assigned');
 
@@ -252,6 +256,11 @@ class ShopsController extends BaseController
         $activity->save();
 
         return $this->sendResponse('Center:'.$shop->name.' is now assigned to '. $rep->lastName.' '. $rep->firstName, 'successful');
+
+
+        }else{
+            return $this->sendError('Not allowed. This rep already has a center assigned.');
+        }
 
     }
 
@@ -297,7 +306,7 @@ class ShopsController extends BaseController
 
         }
 
-        return $this->sendError('Not allowed. Center is not assigned to any rep');
+        return $this->sendError('Not allowed. Center is not assigned to rep');
 
     }
 
