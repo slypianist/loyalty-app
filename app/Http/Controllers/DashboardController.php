@@ -88,7 +88,7 @@ class DashboardController extends BaseController
         ->select('customers.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', DB::raw('SUM(transactions.awardedPoints) as points'))
         ->groupBy('customers.id', 'customers.firstName', 'customers.lastName')
         ->orderByDesc('points')
-       // ->take(5)
+        ->take(5)
         ->get();
 
         return $this->sendResponse($topAccruer, 'successful');
