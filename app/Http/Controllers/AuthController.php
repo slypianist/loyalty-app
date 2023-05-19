@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rep;
+use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Http\Controllers\BaseController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AuthController extends BaseController
 {
@@ -85,8 +90,29 @@ class AuthController extends BaseController
     }
 
     public function authPartner(){
-       $partner = auth()->user();
-       return $this->sendResponse($partner,true);
+       $id = auth()->user()->id;
+
+       try {
+        $partner = User::findOrFail($id);
+
+    } catch (ModelNotFoundException $th) {
+        return $this->sendError('User not found', $th->getMessage());
+    }
+
+    // Get a single partner entity.
+    $data['partner'] =  DB::table('users')
+    ->where('users.id', $id)
+   ->select('users.id','users.firstName AS firstName', 'users.lastName AS lastName', 'users.address AS address',
+         'users.phoneNum AS phoneNumber', 'users.email AS email')
+    ->get();
+
+    // Get Assigned Shops...
+    $data['assignedShops'] = Shop::where('user_id', $partner->id)
+                             ->select('id','shopCode', 'name', 'address', 'location', 'status')
+                            ->get();
+
+    return $this->sendResponse($data, 'Successful');
+
     }
 
         /**
@@ -124,8 +150,22 @@ class AuthController extends BaseController
     }
 
     public function authRep(){
-        $rep =   auth('rep')->user();
-        return $this->sendResponse($rep,200);
+        $id =   auth('rep')->user()->id;
+
+        try {
+            $rep = Rep::findOrFail($id);
+
+
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('User does not exist', $th->getMessage());
+        }
+        $data['rep'] = $rep;
+        $data['center'] = Shop::where('rep_id', $id)
+                            ->select('id','shopCode', 'name', 'address')
+                            ->get();
+
+
+        return $this->sendResponse($data,200);
     }
 
         /**

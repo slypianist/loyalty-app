@@ -83,7 +83,7 @@ class CustomersController extends BaseController
            return $this->sendError('An error occured', $th->getMessage());
         }
             $customer->update($input);
-            return $this->sendResponse($customer, 'Customer record updated successful');
+            return $this->sendResponse($customer, 'Customer record updated successfully');
 
     }
 

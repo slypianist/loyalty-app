@@ -37,40 +37,103 @@ class DashboardController extends BaseController
         $data['totalClaimed'] = $totalClaim;
         $data['totalUnclaimed'] =  $totalAP - $totalClaim;
 
-
         return $this->sendResponse($data, true);
 
     }
 
     public function graphStats(){
      //   $year = request('year'); // Assuming the year is passed as a query parameter named "year"
+        $result = [];
+          // Assuming the year is passed as a query parameter named "year"
+        $year = request('year');;
+        $result[] = $year;
+        $totalPts = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, SUM(awardedPoints) AS total FROM transactions WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS transactions RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON transactions.month = months.month"))
+            ->select(DB::raw("months.month AS month, COALESCE(transactions.total, 0) AS total"))
+            ->pluck('total')
+            ->toArray();
 
-     $data['year'] = request('year'); // Assuming the year is passed as a query parameter named "year"
-        $year = $data['year'];
-        $data['allCustomers'] = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, COUNT(*) AS total FROM customers WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS customers RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON customers.month = months.month"))
-            ->select(DB::raw("months.month AS month, IFNULL(customers.total, 0) AS total"))
+        $totalCustomer = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, COUNT(*) AS total FROM customers WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS customers RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON customers.month = months.month"))
+            ->selectRaw("months.month AS month, COALESCE(customers.total, 0) AS total")
+            ->pluck('total')
+            ->toArray();
+
+        $claimed = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, SUM(pointsRedeemed) AS total FROM withdrawals WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS withdrawals RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON withdrawals.month = months.month"))
+            ->select(DB::raw("months.month AS month, COALESCE(withdrawals.total, 0) AS total"))
+            ->pluck('total')
+            ->toArray();
+
+        $totalVisits = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, SUM(visit) AS total FROM accounts WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS accounts RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON accounts.month = months.month"))
+            ->select(DB::raw("months.month AS month, COALESCE(accounts.total, 0) AS total"))
+            ->pluck('total')
+            ->toArray();
+
+
+         $totalEnrolled = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, COUNT(*) AS total FROM accounts WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS accounts RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON accounts.month = months.month"))
+            ->select(DB::raw("months.month AS month, COALESCE(accounts.total, 0) AS total"))
+            ->pluck('total')
+            ->toArray();
+
+        $result[] = $totalCustomer;
+        $result[] = $totalEnrolled;
+        $result[] = $totalPts;
+        $result[] = $totalVisits;
+        $result[] = $claimed;
+
+        return $this->sendResponse($result,true);
+    }
+
+    public function topAccruer(){
+        $topAccruer = DB::table('accounts')
+                                ->join('customers', 'customers.id', '=', 'accounts.customer_id')
+                                ->select('accounts.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName','accounts.point AS points',)
+                                ->orderByDesc('accounts.point')
+                                ->take(5)
+                                ->get();
+
+        return $this->sendResponse($topAccruer, 'successful');
+
+    }
+
+        public function topRedeemed(){
+            $topRedeemed = DB::table('withdrawals')
+                                ->join('customers', 'customers.id', '=', 'withdrawals.customer_id')
+                                ->select('withdrawals.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName', 'withdrawals.pointsRedeemed AS points')
+                                ->orderByDesc('withdrawals.pointsRedeemed')
+                                ->take(5)
+                                ->get();
+
+            return $this->sendResponse($topRedeemed, 'successful');
+
+    }
+
+        public function topUnclaimed(){
+
+            $topUnclaimed = DB::table('accounts')
+                                ->join('customers', 'customers.id', '=', 'accounts.customer_id')
+                                ->select('accounts.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName','accounts.point AS points',)
+                                ->orderByDesc('accounts.point')
+                                ->take(5)
+                                ->get();
+
+            return $this->sendResponse($topUnclaimed, 'successful');
+
+    }
+
+        public function topVisit(){
+            $topVisit = DB::table('accounts')
+            ->join('customers', 'customers.id', '=', 'accounts.customer_id')
+            ->select('accounts.id AS id', 'customers.firstName AS firstName', 'customers.lastName AS lastName','accounts.visit AS visits',)
+            ->orderByDesc('accounts.visit')
+            ->take(5)
             ->get();
-        // = $year;
 
-
-return $this->sendResponse($data,true);
-
-
-   // dd($customers);
-
-       /*  $totalAccrued=0;
-        $totalRedeemed=0;
-        $totalVisit=0;
-
-         */
-
-
+            return $this->sendResponse($topVisit, 'successful');
 
     }
 
 
     public function repCardStats(){
-        $id = auth('rep')->user()->id;
+        /* $id = auth('rep')->user()->id;
 
         $data['totalCustomer']=0;
         $data['adminDetails'] = auth('rep')->user();
@@ -78,17 +141,16 @@ return $this->sendResponse($data,true);
         $data['totalCustomers'];
         $data['totalShops'];
         $data['totalClaims'];
-        $data['customers'];
-
+        $data['customers']; */
     }
 
     public function partnerDashboard(){
-        $data['adminDetails'] = auth()->user();
+        /* $data['adminDetails'] = auth()->user();
         $data = [];
         $data['totalCustomers'];
         $data['totalShops'];
         $data['totalClaims'];
-        $data['customers'];
+        $data['customers']; */
 
     }
 

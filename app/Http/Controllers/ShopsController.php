@@ -139,7 +139,7 @@ class ShopsController extends BaseController
            $partner = User::where('id', $partnerId)->first();
 
         } catch (ModelNotFoundException $th) {
-            return $this->sendError('Partner does not exist in our records.', $th->getMessage());
+            return $this->sendError('Partner not found in our records.', $th->getMessage());
 
         }
 
@@ -288,7 +288,7 @@ class ShopsController extends BaseController
 
             // Activities table
             $admin =   auth('admin')->user();
-            $info = $admin->firstName. ' '. $admin->lastName.' unassigned shop: '. $shop->name. 'from '. $rep->lastName.' '. $rep->firstName;
+            $info = $admin->firstName. ' '. $admin->lastName.' unassigned shop: '. $shop->name. ' from '. $rep->lastName.' '. $rep->firstName;
             $activity = new Activity();
             $activity->description = $info;
             $activity->save();

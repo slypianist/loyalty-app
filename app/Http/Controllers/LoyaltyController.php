@@ -59,7 +59,7 @@ class LoyaltyController extends BaseController
 
 
             if($invoice){
-                return $this->sendError('This invoice has been used');
+                return $this->sendError('This invoice has been used.');
             }
             $acc = Account::where('customer_id', $customerId)->first();
             $loyaltyConfig = LoyaltySetting::where('status', 'ACTIVE')->first();
@@ -221,8 +221,18 @@ class LoyaltyController extends BaseController
                 $invoice->amount = $request->amount;
                 $invoice->save();
 
-                // Withdrawals
+                //Save transaction
+                $trans = new Transaction();
+                $trans->transId = "SH-". substr(md5(uniqid(rand(), true)),0,7);
+                $trans->customer_id = $customerId;
+                $trans->amount = $request->amount;
+                $trans->rep_id = $repId;
+                $trans->shop_id = $request->shopId;
+                $trans->awardedPoints = $points;
+                $trans->save();
 
+
+                // Withdrawals
                 $withdrawal = new Withdrawal();
                 $withdrawal->customer_id = $customerId;
                 $withdrawal->shop_id = $shopId;
@@ -267,8 +277,17 @@ class LoyaltyController extends BaseController
                 $invoice->amount = $request->amount;
                 $invoice->save();
 
-                // Save claim details
+                //Save Transactions
+                $trans = new Transaction();
+                $trans->transId = "SH-". substr(md5(uniqid(rand(), true)),0,7);
+                $trans->customer_id = $customerId;
+                $trans->amount = $request->amount;
+                $trans->rep_id = $repId;
+                $trans->shop_id = $request->shopId;
+                $trans->awardedPoints = $points;
+                $trans->save();
 
+                // Save claim details
                 $withdrawal = new Withdrawal();
                 $withdrawal->customer_id = $customerId;
                 $withdrawal->shop_id = $shopId;

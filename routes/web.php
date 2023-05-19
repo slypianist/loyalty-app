@@ -43,11 +43,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('award/points', 'LoyaltyController@addLoyaltyPoints');
         $router->post('claim/points', 'LoyaltyController@makeClaims');
         $router->post('reps/logout', 'AuthController@repLogout');
+        $router->get('auth/rep', 'AuthController@authRep');
 });
 
             // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
             $router->get('partner/test', 'AuthController@getTest');
+            $router->get('auth/partner', 'AuthController@authPartner');
             $router->post('partners/logout', 'AuthController@partnerLogout');
     });
 
@@ -115,6 +117,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('transactions', 'ReportController@getTransactions');
         $router->get('withdrawals', 'ReportController@getClaims');
         $router->get('activity', 'ReportController@getActivities');
+        $router->get('top/accruer', 'DashboardController@topAccruer');
+        $router->get('top/redeemed', 'DashboardController@topRedeemed');
+        $router->get('top/unclaimed', 'DashboardController@topUnclaimed');
+        $router->get('top/visit', 'DashboardController@topVisit');
 
     });
 
