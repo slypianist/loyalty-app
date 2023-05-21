@@ -6,6 +6,7 @@ use App\Models\Shop;
 use App\Models\Account;
 use App\Models\Invoice;
 use App\Mail\AwardPoint;
+use App\Mail\ClaimPoint;
 use App\Models\Customer;
 use App\Models\Withdrawal;
 use App\Models\Transaction;
@@ -255,7 +256,7 @@ class LoyaltyController extends BaseController
 
                 //Save transaction
                 $trans = new Transaction();
-                $trans->transId = "SH-". substr(md5(uniqid(rand(), true)),0,7);
+                $trans->transId = "CAP-". substr(md5(uniqid(rand(), true)),0,7);
                 $trans->customer_id = $customerId;
                 $trans->amount = $request->amount;
                 $trans->rep_id = $repId;
@@ -276,11 +277,12 @@ class LoyaltyController extends BaseController
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
                 $data['amount'] = $invoice->amount;
-                $data['awardedPoint'] = $points;
+                $data['points'] = $points;
                 $data['claims'] = $claim;
                 $data['balance'] = $balance;
 
                 //Send Email to group and SMS to customer.
+                Mail::to($customer->email)->send(new ClaimPoint($data));
 
                 //Log transactions to Activity table
 
@@ -335,13 +337,14 @@ class LoyaltyController extends BaseController
                 $data['balance'] = $balance;
 
                 // Send Email to group and SMS to customer.
+                Mail::to($customer->email)->send(new ClaimPoint($data));
 
 
                 return $this->sendResponse($data, 'Loyalty account created & points awarded & your claims were successful.');
 
             }
             else{
-                return response()->json(['error'=>'An error occured adding or claiming points'],500);
+                return $this->sendError('An error occured adding or claiming points');
             }
 
 

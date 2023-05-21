@@ -121,6 +121,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('top/redeemed', 'DashboardController@topRedeemed');
         $router->get('top/unclaimed', 'DashboardController@topUnclaimed');
         $router->get('top/visit', 'DashboardController@topVisit');
+        $router->get('top/center/accrued', 'DashboardController@centerTopAccruer');
 
     });
 

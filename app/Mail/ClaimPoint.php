@@ -19,6 +19,7 @@ class ClaimPoint extends Mailable
      */
     public function __construct($data)
     {
+        $this->data = $data;
 
     }
 
@@ -30,15 +31,15 @@ class ClaimPoint extends Mailable
      */
     public function build(Mailer $mailer)
     {
-        return $this->markdown('pointsAwarded')
-                    ->subject('New Transaction')
+        return $this->markdown('pointsClaimed')
+                    ->subject('New Claims')
                     ->to('group@example.com')
                     ->from(env('MAIL_FROM_ADDRESS'))
                     ->with(['customer' =>$this->data['customerName'],
                             'tel' => $this->data['customerPhone'],
-                             'amount' => $this->data['amountPurchased'],
-                            'points' => $this->data['awardedPoint'],
-                            'center' => $this->data['center'],
-                            'totalPoints' => $this->data['totalPoints']]);
+                            'amount' => $this->data['amount'],
+                             'claim' => $this->data['claims'],
+                            'points' => $this->data['points'],
+                            'balance' => $this->data['balance']]);
     }
 }

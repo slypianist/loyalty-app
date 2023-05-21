@@ -132,7 +132,18 @@ class DashboardController extends BaseController
 
     }
 
-    //public function topCenter
+    public function centerTopAccruer(){
+        $centerTopAccruer = DB::table('shops')
+        ->join('transactions', 'shops.id', '=', 'transactions.shop_id')
+        ->select('shops.id AS id', 'shops.name AS name', DB::raw('SUM(transactions.awardedPoints) as points'))
+        ->groupBy('shops.id', 'shops.name')
+        ->orderByDesc('points')
+        ->take(5)
+        ->get();
+
+        return $this->sendResponse($centerTopAccruer, 'successful');
+
+    }
 
 
     public function repCardStats(){
