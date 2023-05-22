@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LoyaltySettingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,9 +30,16 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('admins/login', 'AuthController@adminLogin');
     $router->post('reps/login', 'AuthController@repLogin');
-    $router->get('tests', 'TestController@index');
-    $router->get('dashboard/card/stats', 'DashboardController@cardStats');
-    $router->get('dashboard/bar/stats', 'DashboardController@graphStats');
+    //Open routes
+    $router->get('rule', 'LoyaltySettingController@getLoyaltyRule');
+    $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
+
+    // Password Reset Users.
+    $router->post('send/link/partner', 'PasswordResetController@sendResetLinkPartner');
+    $router->post('send/link/rep', 'PasswordResetController@sendResetLinkRep');
+    $router->post('send/reset/admin', 'PasswordResetController@sendResetLinkAdmin');
+
+     $router->post('reset/partner/password', 'PasswordResetController@resetPartnerPassword');
 
     $router->post('partners/login', 'AuthController@partnerLogin');
     $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
@@ -62,6 +70,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('admin/{id}', 'AdminController@showAdmin');
         $router->patch('admin/{id}', 'AdminController@updateAdmin');
         $router->delete('admin/{id}', 'AdminController@destroyAdmin');
+        $router->get('dashboard/card/stats', 'DashboardController@cardStats');
+        $router->get('dashboard/bar/stats', 'DashboardController@graphStats');
+
 
         //Partners
         $router->get('partner', 'UserController@index');
@@ -97,7 +108,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         // Loyalty Points
         $router->get('rules', 'LoyaltySettingController@index');
-        $router->get('rule', 'LoyaltySettingController@getLoyaltyRule');
         $router->post('rule', 'LoyaltySettingController@addLoyaltyRule');
         $router->patch('rule/{id}', 'LoyaltySettingController@updateLoyaltyRule');
         $router->delete('rule/{id}', 'LoyaltySettingController@destroyLoyaltyRule');
@@ -124,5 +134,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('top/center/accrued', 'DashboardController@centerTopAccruer');
 
     });
+
+
 
 });
