@@ -21,7 +21,7 @@ class PasswordResetController extends BaseController
 
         if (!$user) {
             $this->sendError('User not found.');
-           // return response()->json(['message' => 'User not found'], 404);
+
         }
 
         $token = Str::uuid()->toString();
@@ -35,7 +35,6 @@ class PasswordResetController extends BaseController
                 ->subject('Password Reset');
         });
 
-       // return response()->json(['message' => 'Password reset link sent successfully']);
        return $this->sendResponse('Password reset link sent successfully', 'Successful');
     }
 
@@ -46,11 +45,10 @@ class PasswordResetController extends BaseController
             'email' => 'required|email',
         ]);
 
-        $rep = DB::table('users')->where('email', $request->email)->first();
+        $rep = DB::table('reps')->where('email', $request->email)->first();
 
         if (!$rep) {
             $this->sendError('User not found.');
-           // return response()->json(['message' => 'User not found'], 404);
         }
 
         $token = Str::uuid()->toString();
@@ -118,16 +116,14 @@ class PasswordResetController extends BaseController
             ->first();
 
         if (!$passwordReset) {
-            return $this->sendError('Invalid Token');
-          //  return response()->json(['message' => 'Invalid token'], 400);
+            return $this->sendError('Invalid link');
         }
 
         // Check if the token has expired (5 minutes in this example)
         $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(5);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
-            return $this->sendError('Token has expired. Try again');
-            //return response()->json(['message' => 'Token has expired. Try again'], 400);
+            return $this->sendError('Link has expired. Try again');
         }
 
         DB::table('users')
@@ -138,7 +134,79 @@ class PasswordResetController extends BaseController
 
         return $this->sendResponse('Password reset successfully.', 'successful.');
 
-      //  return response()->json(['message' => 'Password reset successful']);
+    }
+
+    //Reset admin password
+
+    public function resetAdminPassword(Request $request)
+    {
+        $this->validate($request, [
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $passwordReset = DB::table('admin_password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$passwordReset) {
+            return $this->sendError('Invalid link');
+
+        }
+
+        // Check if the token has expired (5 minutes in this example)
+        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(5);
+        if (Carbon::now()->gt($tokenExpiration)) {
+            // Token expired
+            return $this->sendError('Link has expired. Try again');
+        }
+
+        DB::table('admins')
+            ->where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
+
+        DB::table('admin_password_resets')->where('email', $request->email)->delete();
+
+        return $this->sendResponse('Password reset successfully.', 'successful.');
+
+    }
+
+    public function resetRepPassword(Request $request)
+    {
+        $this->validate($request, [
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $passwordReset = DB::table('rep_password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$passwordReset) {
+            return $this->sendError('Invalid Token');
+
+        }
+
+        // Check if the token has expired (5 minutes in this example)
+        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(5);
+        if (Carbon::now()->gt($tokenExpiration)) {
+            // Token expired
+            return $this->sendError('Link has expired. Initiate a new password reset.');
+
+        }
+
+        DB::table('reps')
+            ->where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
+
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return $this->sendResponse('Password reset successfully.', 'successful.');
+
     }
 
 

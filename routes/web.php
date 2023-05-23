@@ -37,9 +37,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // Password Reset Users.
     $router->post('send/link/partner', 'PasswordResetController@sendResetLinkPartner');
     $router->post('send/link/rep', 'PasswordResetController@sendResetLinkRep');
-    $router->post('send/reset/admin', 'PasswordResetController@sendResetLinkAdmin');
+    $router->post('send/link/admin', 'PasswordResetController@sendResetLinkAdmin');
 
-     $router->post('reset/partner/password', 'PasswordResetController@resetPartnerPassword');
+    $router->post('reset/partner/pw', 'PasswordResetController@resetPartnerPassword');
+    $router->post('reset/rep/pw', 'PasswordResetController@resetRepPassword');
+    $router->post('reset/admin/pw', 'PasswordResetController@resetAdminPassword');
+
 
     $router->post('partners/login', 'AuthController@partnerLogin');
     $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
@@ -53,14 +56,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('reps/logout', 'AuthController@repLogout');
         $router->get('auth/rep', 'AuthController@authRep');
 });
-
             // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
             $router->get('partner/test', 'AuthController@getTest');
             $router->get('auth/partner', 'AuthController@authPartner');
             $router->post('partners/logout', 'AuthController@partnerLogout');
     });
-
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         //Admins
@@ -72,7 +73,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->delete('admin/{id}', 'AdminController@destroyAdmin');
         $router->get('dashboard/card/stats', 'DashboardController@cardStats');
         $router->get('dashboard/bar/stats', 'DashboardController@graphStats');
-
 
         //Partners
         $router->get('partner', 'UserController@index');
@@ -111,7 +111,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('rule', 'LoyaltySettingController@addLoyaltyRule');
         $router->patch('rule/{id}', 'LoyaltySettingController@updateLoyaltyRule');
         $router->delete('rule/{id}', 'LoyaltySettingController@destroyLoyaltyRule');
-
 
         // Permission
         $router->get('permissions', 'PermissionController@getPermission');
