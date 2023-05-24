@@ -89,7 +89,7 @@ class PasswordResetController extends BaseController
             $message->to($admin->email)
                 ->subject('Password Reset');
         });
-        return $this->sendResponse('successful','Check your inbox for the next steps. If you don\'t receive an email, and it\'s not in your spam folder this could mean you signed up with a different address.');
+        return $this->sendResponse('successful','Password reset link sent successfully.');
 
         //  return response()->json(['message' => 'Password reset link sent successfully']);
     }
