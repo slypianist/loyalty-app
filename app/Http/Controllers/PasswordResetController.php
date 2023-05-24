@@ -35,7 +35,7 @@ class PasswordResetController extends BaseController
                 ->subject('Password Reset');
         });
 
-       return $this->sendResponse('Password reset link sent successfully', 'Successful');
+       return $this->sendResponse('Password reset link sent.', 'Successful');
     }
 
    // Password reset for Rep.
@@ -61,7 +61,7 @@ class PasswordResetController extends BaseController
                 ->subject('Password Reset');
         });
 
-        return $this->sendResponse('Password reset link sent successfully.', 'Successful');
+        return $this->sendResponse('Password reset link sent.', 'Successful');
 
     }
 
@@ -89,7 +89,7 @@ class PasswordResetController extends BaseController
             $message->to($admin->email)
                 ->subject('Password Reset');
         });
-        return $this->sendResponse('successful','Password reset link sent successfully.');
+        return $this->sendResponse('successful','Password reset link sent.');
 
         //  return response()->json(['message' => 'Password reset link sent successfully']);
     }
@@ -133,7 +133,7 @@ class PasswordResetController extends BaseController
 
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        return $this->sendResponse('Password reset successfully.', 'successful.');
+        return $this->sendResponse('Password reset link sent.', 'successful.');
 
     }
 
