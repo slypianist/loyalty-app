@@ -46,6 +46,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->post('partners/login', 'AuthController@partnerLogin');
     $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
+    $router->get('check/invoice', 'InvoiceController@checkInvoice');
 
         // Reps Routes
     $router->group(['middleware' => ['auth:rep']], function () use ($router) {
