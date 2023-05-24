@@ -20,7 +20,7 @@ class PasswordResetController extends BaseController
         $user = DB::table('users')->where('email', $request->email)->first();
 
         if (!$user) {
-            $this->sendError('User not found.');
+         return $this->sendError('Check your inbox for the next steps. If you don\'t receive an email, and it\'s not in your spam folder this could mean you signed up with a different address.');
 
         }
 
@@ -48,7 +48,7 @@ class PasswordResetController extends BaseController
         $rep = DB::table('reps')->where('email', $request->email)->first();
 
         if (!$rep) {
-            $this->sendError('User not found.');
+           return $this->sendError('User not found.');
         }
 
         $token = Str::uuid()->toString();
@@ -76,7 +76,7 @@ class PasswordResetController extends BaseController
         $admin = DB::table('admins')->where('email', $request->email)->first();
 
         if (!$admin) {
-            $this->sendError('User not found.');
+          return $this->sendError('Check your inbox for the next steps. If you don\'t receive an email, and it\'s not in your spam folder this could mean you registered with a different address.');
 
         }
 
@@ -89,8 +89,9 @@ class PasswordResetController extends BaseController
             $message->to($admin->email)
                 ->subject('Password Reset');
         });
+        return $this->sendResponse('successful','Check your inbox for the next steps. If you don\'t receive an email, and it\'s not in your spam folder this could mean you signed up with a different address.');
 
-        return response()->json(['message' => 'Password reset link sent successfully']);
+        //  return response()->json(['message' => 'Password reset link sent successfully']);
     }
 
     private function saveToken($email, $token, $tableName)
@@ -120,7 +121,7 @@ class PasswordResetController extends BaseController
         }
 
         // Check if the token has expired (5 minutes in this example)
-        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(5);
+        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(60);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
             return $this->sendError('Link has expired. Try again');
@@ -157,7 +158,7 @@ class PasswordResetController extends BaseController
         }
 
         // Check if the token has expired (5 minutes in this example)
-        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(5);
+        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(60);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
             return $this->sendError('Link has expired. Try again');
@@ -192,7 +193,7 @@ class PasswordResetController extends BaseController
         }
 
         // Check if the token has expired (5 minutes in this example)
-        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(5);
+        $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(60);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
             return $this->sendError('Link has expired. Initiate a new password reset.');
