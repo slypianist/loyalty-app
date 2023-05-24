@@ -20,7 +20,7 @@ class PasswordResetController extends BaseController
         $user = DB::table('users')->where('email', $request->email)->first();
 
         if (!$user) {
-         return $this->sendError('Check your inbox for the next steps. If you don\'t receive an email, and it\'s not in your spam folder this could mean you signed up with a different address.');
+         return $this->sendError('User not found.');
 
         }
 
@@ -48,7 +48,7 @@ class PasswordResetController extends BaseController
         $rep = DB::table('reps')->where('email', $request->email)->first();
 
         if (!$rep) {
-           return $this->sendError('User not found.');
+           return $this->sendError('Ops! User not found.');
         }
 
         $token = Str::uuid()->toString();
@@ -76,7 +76,7 @@ class PasswordResetController extends BaseController
         $admin = DB::table('admins')->where('email', $request->email)->first();
 
         if (!$admin) {
-          return $this->sendError('Check your inbox for the next steps. If you don\'t receive an email, and it\'s not in your spam folder this could mean you registered with a different address.');
+          return $this->sendError('Ops! User not found');
 
         }
 
@@ -197,7 +197,6 @@ class PasswordResetController extends BaseController
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
             return $this->sendError('Link has expired. Initiate a new password reset.');
-
         }
 
         DB::table('reps')
