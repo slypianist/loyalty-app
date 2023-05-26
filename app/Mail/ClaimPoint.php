@@ -33,8 +33,9 @@ class ClaimPoint extends Mailable
     {
         return $this->markdown('pointsClaimed')
                     ->subject('New Claims')
-                    ->to('group@example.com')
-                    ->from(env('MAIL_FROM_ADDRESS'))
+                    ->to('itsupport@capplc.com')
+                    ->bcc('capplc104@gmail.com')
+                    ->from(env('MAIL_FROM_ADDRESS','CAP PLC'))
                     ->with(['customer' =>$this->data['customerName'],
                             'tel' => $this->data['customerPhone'],
                             'amount' => $this->data['amount'],

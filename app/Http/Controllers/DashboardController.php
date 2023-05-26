@@ -159,12 +159,17 @@ class DashboardController extends BaseController
     }
 
     public function partnerDashboard(){
-        /* $data['adminDetails'] = auth()->user();
-        $data = [];
-        $data['totalCustomers'];
-        $data['totalShops'];
-        $data['totalClaims'];
-        $data['customers']; */
+        $id = auth()->user()->id;
+      //  $data = [];
+        $data['totalCustomersAward'] = DB::table('transactions')
+                                    ->join('shops', 'shops.id', '=', 'transactions.shop_id')
+                                    ->where('shops.id', '=', 1)
+                                    ->count();
+        $data['totalShops'] = Shop::where('user_id', $id)->count();
+      //  $data['totalClaims'];
+      //  $data['customers'];
+
+      return $this->sendResponse($data, 'successful');
 
     }
 

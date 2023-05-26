@@ -333,7 +333,7 @@ class LoyaltyController extends BaseController
                 $data['customerPhone'] = $customer->phoneNum;
                 $data['amount'] = $invoice->amount;
                 $data['points'] = $points;
-                $data['claim'] = $claim;
+                $data['claims'] = $claim;
                 $data['balance'] = $balance;
 
                 // Send Email to group and SMS to customer.

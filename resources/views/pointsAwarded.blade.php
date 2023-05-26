@@ -12,12 +12,6 @@ Loyalty Points Have been awarded to:
 <p>Total Accrued: {{$totalPoints}}
 @endcomponent
 
-@component('mail::table')
-| Name          | Tel      | Amount | Center   |Points|Total Pts|
-| :-----------: |:--------:|:------:|:-------:|:------:|:--------:|:--------:|
-| {{$customer}} | {{$tel}} |₦{{$amount}}|{{$center}}|{{$points}}|{{$totalPoints}}|
-@endcomponent
-
 Thanks,<br>
 {{ config('app.name') }}
 @endcomponent

@@ -32,8 +32,9 @@ class AwardPoint extends Mailable
     {
         return $this->markdown('pointsAwarded')
                     ->subject('New Transaction')
-                    ->to('group@example.com')
-                    ->from(env('MAIL_FROM_ADDRESS'))
+                    ->to('itsupport@capplc.com')
+                    ->bcc('capplc104@gmail.com')
+                    ->from(env('MAIL_FROM_ADDRESS', 'CAP PLC'))
                     ->with(['customer' =>$this->data['customerName'],
                             'tel' => $this->data['customerPhone'],
                              'amount' => $this->data['amountPurchased'],

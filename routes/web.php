@@ -62,6 +62,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('partner/test', 'AuthController@getTest');
             $router->get('auth/partner', 'AuthController@authPartner');
             $router->post('partners/logout', 'AuthController@partnerLogout');
+            $router->get('dashboard/partner/card/stats', 'DashboardController@partnerDashboard');
     });
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
