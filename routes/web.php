@@ -56,6 +56,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('claim/points', 'LoyaltyController@makeClaims');
         $router->post('reps/logout', 'AuthController@repLogout');
         $router->get('auth/rep', 'AuthController@authRep');
+        $router->get('dashboard/rep/card/stats', 'RepDashboardController@cardStats');
 });
             // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
@@ -73,8 +74,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('admin/{id}', 'AdminController@showAdmin');
         $router->patch('admin/{id}', 'AdminController@updateAdmin');
         $router->delete('admin/{id}', 'AdminController@destroyAdmin');
-        $router->get('dashboard/card/stats', 'DashboardController@cardStats');
-        $router->get('dashboard/bar/stats', 'DashboardController@graphStats');
+        $router->get('dashboard/card/stats', 'AdminDashboardController@cardStats');
+        $router->get('dashboard/bar/stats', 'AdminDashboardController@graphStats');
 
         //Partners
         $router->get('partner', 'UserController@index');
@@ -128,11 +129,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('transactions', 'ReportController@getTransactions');
         $router->get('withdrawals', 'ReportController@getClaims');
         $router->get('activity', 'ReportController@getActivities');
-        $router->get('top/accruer', 'DashboardController@topAccruer');
-        $router->get('top/redeemed', 'DashboardController@topRedeemed');
-        $router->get('top/unclaimed', 'DashboardController@topUnclaimed');
-        $router->get('top/visit', 'DashboardController@topVisit');
-        $router->get('top/center/accrued', 'DashboardController@centerTopAccruer');
+        $router->get('top/accruer', 'AdminDashboardController@topAccruer');
+        $router->get('top/redeemed', 'AdminDashboardController@topRedeemed');
+        $router->get('top/unclaimed', 'AdminDashboardController@topUnclaimed');
+        $router->get('top/visit', 'AdminDashboardController@topVisit');
+        $router->get('top/center/accrued', 'AdminDashboardController@centerTopAccruer');
 
     });
 
