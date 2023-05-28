@@ -117,9 +117,12 @@ class CustomersController extends BaseController
            $e->getMessage();
            return $this->sendError('An error has occured', $e->getMessage());
         }
-        $points = $customer->account;
+        $points = $customer->account->point;
 
         $data['customerDetails'] = $customer;
+
+        $data['point'] = $points;
+
     //
         $data['history'] = DB::table('transactions')
                             ->where('transactions.customer_id', '=', $customer->id)
