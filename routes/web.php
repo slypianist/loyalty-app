@@ -63,7 +63,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('partner/test', 'AuthController@getTest');
             $router->get('auth/partner', 'AuthController@authPartner');
             $router->post('partners/logout', 'AuthController@partnerLogout');
-            $router->get('dashboard/partner/card/stats', 'DashboardController@partnerDashboard');
+            $router->get('dashboard/partner/card/all', 'DashboardController@partnerCardStatsAll');
+            $router->get('dashboard/partner/card', 'DashboardController@partnerCardStats');
+            $router->get('dashboard/partner/bar', 'DashboardController@partnerBarStats');
+            $router->get('dashboard/partner/center', 'DashboardController@getPartnerCenter');
+            $router->get('dashboard/partner/top/accrued', 'DashboardController@sideBarStats1');
+            $router->get('dashboard/partner/top/claimed', 'DashboardController@sideBarStats2');
+            $router->get('dashboard/partner/top/visit', 'DashboardController@sideBarStats3');
     });
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {

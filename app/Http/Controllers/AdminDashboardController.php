@@ -42,7 +42,7 @@ class AdminDashboardController extends BaseController
      //   $year = request('year'); // Assuming the year is passed as a query parameter named "year"
         $result = [];
           // Assuming the year is passed as a query parameter named "year"
-        $year = request('year');;
+        $year = request('year');
         $result[] = $year;
         $totalPts = DB::table(DB::raw("(SELECT MONTH(created_at) AS month, SUM(awardedPoints) AS total FROM transactions WHERE YEAR(created_at) = $year GROUP BY YEAR(created_at), MONTH(created_at)) AS transactions RIGHT JOIN (SELECT 1 AS month UNION SELECT 2 AS month UNION SELECT 3 AS month UNION SELECT 4 AS month UNION SELECT 5 AS month UNION SELECT 6 AS month UNION SELECT 7 AS month UNION SELECT 8 AS month UNION SELECT 9 AS month UNION SELECT 10 AS month UNION SELECT 11 AS month UNION SELECT 12 AS month) AS months ON transactions.month = months.month"))
             ->select(DB::raw("months.month AS month, COALESCE(transactions.total, 0) AS total"))

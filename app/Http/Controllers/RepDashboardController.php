@@ -30,7 +30,7 @@ class RepDashboardController extends BaseController
        $data['totalpurchases'] = DB::table('transactions')->where('transactions.shop_id', $centerId)->sum('amount');
         $data['totalPoints'] = DB::table('transactions')->where('transactions.shop_id', $centerId)
         ->sum('awardedPoints');
-        $data['totalACP'] = DB::table('withdrawals')->where('withdrawals.shop_id', $centerId)
+        $data['totalClaimed'] = DB::table('withdrawals')->where('withdrawals.shop_id', $centerId)
         ->sum('pointsRedeemed');
 
         return $this->sendResponse($data, 'successful');
