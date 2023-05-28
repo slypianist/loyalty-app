@@ -21,6 +21,7 @@ class AdminDashboardController extends BaseController
         //
     }
 
+    // Card Stats
     public function cardStats(){
 
         $totalAP = DB::table('transactions')->sum('awardedPoints');
@@ -37,6 +38,8 @@ class AdminDashboardController extends BaseController
         return $this->sendResponse($data, true);
 
     }
+
+    // Bar Stats
 
     public function graphStats(){
      //   $year = request('year'); // Assuming the year is passed as a query parameter named "year"
@@ -78,6 +81,8 @@ class AdminDashboardController extends BaseController
 
         return $this->sendResponse($result,true);
     }
+
+    // Top Five Customers Stats
 
     public function topAccruer(){
         $topAccruer = DB::table('customers')
@@ -129,16 +134,57 @@ class AdminDashboardController extends BaseController
 
     }
 
+    //Top Centers Stats
+
     public function centerTopAccruer(){
         $centerTopAccruer = DB::table('shops')
         ->join('transactions', 'shops.id', '=', 'transactions.shop_id')
-        ->select('shops.id AS id', 'shops.name AS name', DB::raw('SUM(transactions.awardedPoints) as points'))
+        ->select('shops.id AS id', 'shops.name AS name', DB::raw('SUM(transactions.amount) as amount'))
+        ->groupBy('shops.id', 'shops.name')
+        ->orderByDesc('amount')
+        ->take(5)
+        ->get();
+
+        return $this->sendResponse($centerTopAccruer, 'successful');
+
+    }
+
+    public function centerTopVisit(){
+        $centerTopVisit = DB::table('shops')
+        ->join('transactions', 'shops.id', '=', 'transactions.shop_id')
+        ->select('shops.id AS id', 'shops.name AS name', DB::raw('COUNT(*) as visit'))
+        ->groupBy('shops.id', 'shops.name')
+        ->orderByDesc('visit')
+        ->take(5)
+        ->get();
+
+        return $this->sendResponse($centerTopVisit, 'successful');
+
+    }
+
+    public function centerTopClaim(){
+        $centerTopClaim = DB::table('shops')
+        ->join('withdrawals', 'shops.id', '=', 'withdrawals.shop_id')
+        ->select('shops.id AS id', 'shops.name AS name', DB::raw('SUM(withdrawals.pointsRedeemed) as points'))
         ->groupBy('shops.id', 'shops.name')
         ->orderByDesc('points')
         ->take(5)
         ->get();
 
-        return $this->sendResponse($centerTopAccruer, 'successful');
+        return $this->sendResponse($centerTopClaim, 'Top five Claims');
+
+    }
+
+    public function centerTopEnrol(){
+        $centerTopEnrol = DB::table('shops')
+        ->join('transactions', 'shops.id', '=', 'transactions.shop_id')
+        ->select('shops.id AS id', 'shops.name AS name', DB::raw('COUNT(DISTINCT transactions.customer_id) as customers'))
+        ->groupBy('shops.id', 'shops.name')
+        ->orderByDesc('customers')
+        ->take(5)
+        ->get();
+
+        return $this->sendResponse($centerTopEnrol, 'Top five enrolment');
 
     }
 }

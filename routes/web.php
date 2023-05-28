@@ -125,22 +125,24 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('permissions', 'PermissionController@getPermission');
 
         //Roles
-        $router->get('role', 'RoleController@index');
-        $router->post('role', 'RoleController@store');
+        $router->get('role',    'RoleController@index');
+        $router->post('role',   'RoleController@store');
         $router->get('role/{id}', 'RoleController@show');
         $router->patch('role/{id}', 'RoleController@update');
         $router->delete('role/{id}', 'RoleController@destroy');
 
         //Reports
-        $router->get('transactions', 'ReportController@getTransactions');
-        $router->get('withdrawals', 'ReportController@getClaims');
-        $router->get('activity', 'ReportController@getActivities');
-        $router->get('top/accruer', 'AdminDashboardController@topAccruer');
-        $router->get('top/redeemed', 'AdminDashboardController@topRedeemed');
-        $router->get('top/unclaimed', 'AdminDashboardController@topUnclaimed');
-        $router->get('top/visit', 'AdminDashboardController@topVisit');
-        $router->get('top/center/accrued', 'AdminDashboardController@centerTopAccruer');
-
+        $router->get('transactions',    'ReportController@getTransactions');
+        $router->get('withdrawals',     'ReportController@getClaims');
+        $router->get('activity',        'ReportController@getActivities');
+        $router->get('top/accruer',     'AdminDashboardController@topAccruer');
+        $router->get('top/redeemed',    'AdminDashboardController@topRedeemed');
+        $router->get('top/unclaimed',   'AdminDashboardController@topUnclaimed');
+        $router->get('top/visit',       'AdminDashboardController@topVisit');
+        $router->get('center/top/accrued', 'AdminDashboardController@centerTopAccruer');
+        $router->get('center/top/visit', 'AdminDashboardController@centerTopVisit');
+        $router->get('center/top/claim', 'AdminDashboardController@centerTopClaim');
+        $router->get('center/top/enrol', 'AdminDashboardController@centerTopEnrol');
     });
 
 
