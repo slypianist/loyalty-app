@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use App\Http\Controllers\BaseController;
 
-class SettingsController extends Controller
+class SettingsController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -17,36 +19,12 @@ class SettingsController extends Controller
         //
     }
 
-   /*  public function index(){
-        $rule = Setting::all()->get(5);
-        return response()->json(['rule'=>$rule]);
 
-    } */
+    public function resetSetting(){
+        Account::query()->update(['point'=> 0, 'visit'=> 0]);
 
-    public function addLoyaltyRule(Request $request){
-        $rule = new Setting();
-        $rule->loyaltyRule = $request->value;
-        $rule->save();
-        return response()->json(['message'=>'Loyalty rule is created']);
+        return $this->sendResponse('Reset successful.', 'successful');
 
     }
 
-    public function getLoyaltyRule(){
-        $rule = Setting::all()->first();
-        return response()->json(['rule'=>$rule->loyaltyRule]);
-    }
-
-    public function updateLoyaltyRule(Request $request,$id){
-        $rule = Setting::findOrFail($id);
-        $rule->loyaltyRule = $request->loyaltyRule;
-        $rule->update();
-
-        return response()->json(['message'=>'Loyalty is update']);
-
-    }
-
-    public function index(){
-      $settings = Setting::allSettings();
-
-    }
 }

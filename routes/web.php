@@ -143,6 +143,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('center/top/visit', 'AdminDashboardController@centerTopVisit');
         $router->get('center/top/claim', 'AdminDashboardController@centerTopClaim');
         $router->get('center/top/enrol', 'AdminDashboardController@centerTopEnrol');
+
+        // Settings
+
+        $router->post('setting/reset', 'SettingsController@resetSetting');
     });
 
 
