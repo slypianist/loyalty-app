@@ -111,17 +111,17 @@ class CustomersController extends BaseController
     public function getCustomer(Request $request, $id){
        // $phone = $request->phone;
         try {
-            $customer = Customer::where('id', $id)->first();
+            $customer = Customer::where('id', $id)->firstOrFail();
 
         } catch (ModelNotFoundException $e) {
            $e->getMessage();
            return $this->sendError('An error has occured', $e->getMessage());
         }
-        $points = $customer->account->point;
+       // $points = $customer->account->point;
 
         $data['customerDetails'] = $customer;
 
-        $data['point'] = $points;
+        $data['balance'] = Account::where('customer_id', $customer->id)->select('point')->first();
 
     //
         $data['history'] = DB::table('transactions')
