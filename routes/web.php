@@ -33,6 +33,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     //Open routes
     $router->get('rule', 'LoyaltySettingController@getLoyaltyRule');
     $router->get('customer/search', 'CustomersController@getCustomerPhoneNum');
+    $router->get('company/invoice', 'InvoiceController@getCenterInvoice');
 
     // Password Reset Users.
     $router->post('send/link/partner', 'PasswordResetController@sendResetLinkPartner');

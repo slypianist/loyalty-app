@@ -21,13 +21,26 @@ class InvoiceController extends BaseController
 
     public function checkInvoice(Request $request){
         $id = $request->invoiceId;
+        $compId = $request->companyId;
 
-        $invoice = Invoice::where('invoiceCode', $id)->first();
+        $invoice = Invoice::where('invoiceCode', $id)
+                            ->where('company', $compId)
+                            ->first();
         if($invoice === NULL){
             return $this->sendResponse(200, 'successful');
         }
             return $this->sendError('Sorry, invoice already exist.');
 
+
+    }
+
+    public function getCenterInvoice(){
+        $id = request('invoiceId');
+        $compID = request('companyId');
+
+        $invoice = Invoice::where('companyId', $compID)->get();
+
+        return $this->sendResponse($invoice, 'successful');
 
     }
 }

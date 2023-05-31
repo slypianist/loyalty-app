@@ -41,14 +41,16 @@ class LoyaltyController extends BaseController
             'shopId' => 'required',
             'invoiceNum' => 'required',
             'amount' => 'required',
-            'id' => 'required'
+            'id' => 'required',
+            'companyId'=> 'required'
 
         ],
         $messages = [
             'shopId.required' => 'Center ID is not provided.',
             'invoiceNum.required' => 'Invoice number is not provided.',
             'amount.required' => 'Amount purchased is not provided.',
-            'id.required' => 'Customer ID is not provided'
+            'id.required' => 'Customer ID is not provided',
+            'companyId.required' => 'Company ID is not provided'
         ]
     );
 
@@ -57,6 +59,7 @@ class LoyaltyController extends BaseController
         $repId = auth('rep')->user()->id;
         $repName = auth('rep')->user()->firstName;
         $shopId = $request->shopId;
+        $compId = $request->companyId;
 
 
         // Check if rep is assigned to shop
@@ -68,7 +71,9 @@ class LoyaltyController extends BaseController
         }
 
         //Check if invoice is already used.
-        $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
+        $invoice = Invoice::where('invoiceCode', $invoiceNum)
+                            ->where('companyId', $compId)
+                            ->first();
 
         try {
             $customer = Customer::findorFail($customerId);
@@ -100,6 +105,7 @@ class LoyaltyController extends BaseController
                 $invoice->invoiceCode = $request->invoiceNum;
                 $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
+                $invoice->companyId = $request->companyId;
                 $invoice->save();
 
                 // Transaction
@@ -143,6 +149,7 @@ class LoyaltyController extends BaseController
                 $invoice->invoiceCode = $request->invoiceNum;
                 $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
+                $invoice->companyId = $request->companyId;
                 $invoice->save();
 
                 // Transaction
@@ -189,7 +196,8 @@ class LoyaltyController extends BaseController
             'shopId' => 'required',
             'invoiceNum' => 'required',
             'amount' => 'required',
-            'id' => 'required'
+            'id' => 'required',
+            'companyId' => 'required'
 
         ],
         $messages = [
@@ -206,6 +214,7 @@ class LoyaltyController extends BaseController
         $repId = auth('rep')->user()->id;
         $repName = auth('rep')->user()->firstName;
         $claim = request('claim',0);
+        $compId = $request->companyId;
 
         // Check if rep is assigned to shop.
         $center = DB::table('shops')->where('shops.id', $shopId)
@@ -213,7 +222,13 @@ class LoyaltyController extends BaseController
                                     ->count();
 
         //Check if invoice is already used.
-        $invoice = Invoice::where('invoiceCode', $invoiceNum)->first();
+         $invoice = Invoice::where('invoiceCode', $invoiceNum)
+                            ->where('companyId', $compId)
+                            ->first();
+       /*  $invoice =    Invoice::where(function ($query) use ($invoiceNum, $compId) {
+                                $query->where('invoiceCode', '=', $invoiceNum)
+                                      ->where('companyId', $compId);
+                            })->get(); */
 
         // Get customer's details.
         $customer = Customer::findorFail($customerId);
@@ -252,6 +267,7 @@ class LoyaltyController extends BaseController
                 $invoice->invoiceCode = $request->invoiceNum;
                 $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
+                $invoice->companyId = $request->companyId;
                 $invoice->save();
 
                 //Save transaction
@@ -309,6 +325,7 @@ class LoyaltyController extends BaseController
                 $invoice->invoiceCode = $request->invoiceNum;
                 $invoice->customer_id = $customerId;
                 $invoice->amount = $request->amount;
+                $invoice->companyId = $request->companyId;
                 $invoice->save();
 
                 //Save Transactions
