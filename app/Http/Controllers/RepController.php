@@ -145,11 +145,17 @@ class RepController extends BaseController
     public function destroyRep($id){
         try {
             $rep = Rep::findOrFail($id);
-            $data =    $rep->delete();
-    return $this->sendResponse($data, 'Record deleted successfully.');
         } catch (ModelNotFoundException $th) {
             return $this->sendError('Operation failed.', $th->getMessage());
         }
+        $shop = Shop::where('rep_id', $rep->id)->first();
+        if($shop->count() != 1){
+            $shop->rep()->dissociate($rep);
+            $shop->status2 = "UNASSIGNED";
+            $shop->save();
+        }
+        $data =    $rep;
+        return $this->sendResponse($data, 'Rep disabled successfully.');
 
        }
 

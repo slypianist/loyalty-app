@@ -70,22 +70,19 @@ class RoleController extends BaseController
 
     }
 
-     /* public function editRoleDetails($id){
+      public function rolePermissions($id){
         try {
-            $data['role'] = Role::find($id);
+            $data['role'] = Role::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('Operation Failed.', $th->getMessage());
+        }
         $data['permissions'] = Permission::get();
         $data['rolePermissions'] = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
         ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')->all();
 
         return $this->sendResponse($data, 'Successful');
-       // return view('roles.edit', compact('role', 'permissions', 'rolePermissions'));
 
-        } catch (ModelNotFoundException $th) {
-            return $this->sendError('Operation Failed.', $th->getMessage());
-
-        }
-
-    } */
+    }
 
     public function update(Request $request, $id){
         $this->validate($request,[

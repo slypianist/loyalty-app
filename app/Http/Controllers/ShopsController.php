@@ -240,7 +240,7 @@ class ShopsController extends BaseController
         if($shopRep === NULL){
             //check if center is already assigned to a rep
         if($shop->status2==='ASSIGNED-TO-REP'){
-            return $this->sendError('Error: Center is already assigned');
+            return $this->sendError('Error: Center is already assigned.');
 
         }
 
@@ -259,7 +259,7 @@ class ShopsController extends BaseController
 
 
         }else{
-            return $this->sendError('Not allowed. This rep already has a center assigned.');
+            return $this->sendError('Not allowed. Center already has a rep assigned to it.');
         }
 
     }

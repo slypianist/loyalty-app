@@ -70,6 +70,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('dashboard/partner/top/accrued', 'DashboardController@sideBarStats1');
             $router->get('dashboard/partner/top/claimed', 'DashboardController@sideBarStats2');
             $router->get('dashboard/partner/top/visit', 'DashboardController@sideBarStats3');
+            $router->get('claim/report', 'ReportController@getPartnerClaimReport');
+            $router->get('point/report', 'ReportController@getPartnerPointReport');
     });
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
@@ -128,6 +130,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('role',    'RoleController@index');
         $router->post('role',   'RoleController@store');
         $router->get('role/{id}', 'RoleController@show');
+        $router->get('roles/permissions/{id}', 'RoleController@rolePermissions');
         $router->patch('role/{id}', 'RoleController@update');
         $router->delete('role/{id}', 'RoleController@destroy');
 
