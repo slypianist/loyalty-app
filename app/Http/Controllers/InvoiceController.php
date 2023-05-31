@@ -24,7 +24,7 @@ class InvoiceController extends BaseController
         $compId = $request->companyId;
 
         $invoice = Invoice::where('invoiceCode', $id)
-                            ->where('company', $compId)
+                            ->where('companyId', $compId)
                             ->first();
         if($invoice === NULL){
             return $this->sendResponse(200, 'successful');
