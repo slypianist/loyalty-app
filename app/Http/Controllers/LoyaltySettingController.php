@@ -52,16 +52,30 @@ class LoyaltySettingController extends BaseController
 
         $loyalty = LoyaltySetting::where('status', 'ACTIVE')->count();
 
+        if($loyalty >= 1){
+            LoyaltySetting::query()->update(['status'=>'INACTIVE']);
+            try {
+
+                $data = LoyaltySetting::findOrFail($id);
+
+            } catch (ModelNotFoundException $th) {
+                return $this->sendError('An error occured', $th->getMessage());
+            }
+
+                $input = $request->all();
+
+                $data->update($input);
+
+            return $this->sendResponse($data, 'Loyalty rule updated successful.');
+           // return $this->sendError('Not allowed... You can only have a single active rule.');
+        }
+
         try {
 
             $data = LoyaltySetting::findOrFail($id);
 
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occured', $th->getMessage());
-        }
-
-        if($loyalty >= 1){
-            return $this->sendError('Not allowed... You can only have a single active rule.');
         }
 
             $input = $request->all();
