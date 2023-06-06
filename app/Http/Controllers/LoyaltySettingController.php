@@ -53,13 +53,6 @@ class LoyaltySettingController extends BaseController
             return $this->sendError('An error fetching rule.', $th->getMessage());
         }
 
-        // Activities Table;
-        $admin =   auth('admin')->user();
-        $info =$admin->firstName. ' '. $admin->lastName. ' created loyalty rule';
-        $activity = new Activity();
-        $activity->description = $info;
-        $activity->save();
-
         return $this->sendResponse($rule,'Loyalty Rule');
 
     }
