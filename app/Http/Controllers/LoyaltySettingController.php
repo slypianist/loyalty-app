@@ -32,7 +32,6 @@ class LoyaltySettingController extends BaseController
         $data = new LoyaltySetting();
         $data->name = $request->name;
         $data->rule = $request->rule;
-        $data->status = 'ACTIVE';
         $data->save();
         return $this->sendResponse($data, 'Loyalty rule is created');
     }
