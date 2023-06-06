@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Models\Activity;
 use App\Models\LoyaltyRule;
 use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
 use App\Models\LoyaltySetting;
+use App\Http\Controllers\BaseController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LoyaltySettingController extends BaseController
@@ -33,6 +34,14 @@ class LoyaltySettingController extends BaseController
         $data->name = $request->name;
         $data->rule = $request->rule;
         $data->save();
+
+         // Activities Table;
+         $admin =   auth('admin')->user();
+         $info =$admin->firstName. ' '. $admin->lastName. ' created loyalty rule.';
+         $activity = new Activity();
+         $activity->description = $info;
+         $activity->save();
+
         return $this->sendResponse($data, 'Loyalty rule is created');
     }
 
@@ -43,6 +52,13 @@ class LoyaltySettingController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error fetching rule.', $th->getMessage());
         }
+
+        // Activities Table;
+        $admin =   auth('admin')->user();
+        $info =$admin->firstName. ' '. $admin->lastName. ' created loyalty rule';
+        $activity = new Activity();
+        $activity->description = $info;
+        $activity->save();
 
         return $this->sendResponse($rule,'Loyalty Rule');
 
@@ -66,6 +82,13 @@ class LoyaltySettingController extends BaseController
 
                 $data->update($input);
 
+                // Activities Table;
+                $admin =   auth('admin')->user();
+                $info =$admin->firstName. ' '. $admin->lastName. ' updated loyalty rule';
+                $activity = new Activity();
+                $activity->description = $info;
+                $activity->save();
+
             return $this->sendResponse($data, 'Loyalty rule updated successful.');
            // return $this->sendError('Not allowed... You can only have a single active rule.');
         }
@@ -82,6 +105,13 @@ class LoyaltySettingController extends BaseController
 
             $data->update($input);
 
+             // Activities Table;
+             $admin =   auth('admin')->user();
+             $info =$admin->firstName. ' '. $admin->lastName. ' updated loyalty app';
+             $activity = new Activity();
+             $activity->description = $info;
+             $activity->save();
+
         return $this->sendResponse($data, 'Loyalty rule updated successful.');
 
     }
@@ -92,7 +122,16 @@ class LoyaltySettingController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occurred.');
         }
+
         $data->delete();
+
+         // Activities Table;
+         $admin =   auth('admin')->user();
+         $info =$admin->firstName. ' '. $admin->lastName. ' deleted loyalty rule';
+         $activity = new Activity();
+         $activity->description = $info;
+         $activity->save();
+
         return $this->sendResponse($data, 'Rule deleted successfully.');
     }
 
