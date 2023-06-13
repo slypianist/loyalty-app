@@ -19,7 +19,10 @@ class LoyaltySettingController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:list-loyalty-rules|create-loyalty-rule|set-loyalty-rule|delete-loyalty-rule', ['only'=> ['index']]);
+        $this->middleware('permission:create-loyalty-rule', ['only'=> ['addLoyaltyRule']]);
+        $this->middleware('permission:set-loyalty-rule', ['only'=> ['updateLoyaltyRule']]);
+        $this->middleware('permission:delete-loyalty-rule', ['only'=> ['destroyLoyaltyRule']]);
     }
 
     public function index(){
@@ -42,7 +45,7 @@ class LoyaltySettingController extends BaseController
          $activity->description = $info;
          $activity->save();
 
-        return $this->sendResponse($data, 'Loyalty rule is created');
+        return $this->sendResponse($data, 'Loyalty rule is created.');
     }
 
     public function getLoyaltyRule(){
@@ -77,7 +80,7 @@ class LoyaltySettingController extends BaseController
 
                 // Activities Table;
                 $admin =   auth('admin')->user();
-                $info =$admin->firstName. ' '. $admin->lastName. ' updated loyalty rule';
+                $info =$admin->firstName. ' '. $admin->lastName. ' updated loyalty rule.';
                 $activity = new Activity();
                 $activity->description = $info;
                 $activity->save();
@@ -87,20 +90,17 @@ class LoyaltySettingController extends BaseController
         }
 
         try {
-
             $data = LoyaltySetting::findOrFail($id);
-
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occured', $th->getMessage());
         }
 
             $input = $request->all();
-
             $data->update($input);
 
              // Activities Table;
              $admin =   auth('admin')->user();
-             $info =$admin->firstName. ' '. $admin->lastName. ' updated loyalty app';
+             $info =$admin->firstName. ' '. $admin->lastName. ' updated loyalty rule.';
              $activity = new Activity();
              $activity->description = $info;
              $activity->save();
@@ -120,7 +120,7 @@ class LoyaltySettingController extends BaseController
 
          // Activities Table;
          $admin =   auth('admin')->user();
-         $info =$admin->firstName. ' '. $admin->lastName. ' deleted loyalty rule';
+         $info =$admin->firstName. ' '. $admin->lastName. ' deleted loyalty rule.';
          $activity = new Activity();
          $activity->description = $info;
          $activity->save();

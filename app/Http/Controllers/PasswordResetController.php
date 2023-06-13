@@ -91,7 +91,6 @@ class PasswordResetController extends BaseController
         });
         return $this->sendResponse('successful','Password reset link sent.');
 
-        //  return response()->json(['message' => 'Password reset link sent successfully']);
     }
 
     private function saveToken($email, $token, $tableName)
@@ -120,7 +119,7 @@ class PasswordResetController extends BaseController
             return $this->sendError('Invalid link');
         }
 
-        // Check if the token has expired (5 minutes in this example)
+        // Check if the token has expired.
         $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(60);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
@@ -157,7 +156,7 @@ class PasswordResetController extends BaseController
 
         }
 
-        // Check if the token has expired (5 minutes in this example)
+        // Check if the token has expired.
         $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(60);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired
@@ -192,7 +191,7 @@ class PasswordResetController extends BaseController
 
         }
 
-        // Check if the token has expired (5 minutes in this example)
+        // Check if the token has expired.
         $tokenExpiration = Carbon::parse($passwordReset->created_at)->addMinutes(60);
         if (Carbon::now()->gt($tokenExpiration)) {
             // Token expired

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('rep_id')->nullable();
             $table->foreign('rep_id')->references('id')->on('reps')->onDelete('cascade');
             $table->string('shopCode');
+            $table->string('companyCode')->nullable();
             $table->string('name');
             $table->string('address')->nullable();
             $table->string('location')->nullable();

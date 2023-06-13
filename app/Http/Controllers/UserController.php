@@ -28,6 +28,11 @@ class UserController extends BaseController
      */
     public function __construct()
     {
+        $this->middleware('permission:list-partners|create-partner|update-partner|delete-partner|view-partner', ['only'=> ['index']]);
+        $this->middleware('permission:create-partner', ['only'=> ['createPartner']]);
+        $this->middleware('permission:view-partner', ['only'=> ['showPartner']]);
+        $this->middleware('permission:update-partner', ['only'=> ['updatePartner']]);
+        $this->middleware('permission:delete-partner', ['only'=> ['destroyPartner']]);
 
     }
 
@@ -135,8 +140,6 @@ class UserController extends BaseController
         return $this->sendResponse($partner, 'Record successfully deleted.');
 
     }
-
-
 
 
 }

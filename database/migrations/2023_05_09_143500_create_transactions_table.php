@@ -17,11 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('transId');
             $table->unsignedBigInteger('customer_id');
-            $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->unsignedBigInteger('rep_id');
-            $table->foreign('rep_id')->references('id')->on('reps')->onUpdate('cascade');
+            $table->foreign('rep_id')->references('id')->on('reps')->onDelete('cascade');
             $table->unsignedBigInteger('shop_id');
-            $table->foreign('shop_id')->references('id')->on('shops')->onUpdate('cascade');
+            $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
+            $table->unsignedBigInteger('invoice_id')->nullable();
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onUpdate('cascade');
             $table->double('amount',12,2);
             $table->double('awardedPoints',12,2);
             $table->timestamps();

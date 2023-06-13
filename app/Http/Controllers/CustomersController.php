@@ -17,7 +17,10 @@ class CustomersController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:list-customers|create-customer|update-customer|delete-customer', ['only'=> ['index']]);
+        $this->middleware('permission:create-customer', ['only'=> ['createCustomer']]);
+        $this->middleware('permission:update-customer', ['only'=> ['updateCustomer']]);
+        $this->middleware('permission:delete-customer', ['only'=> ['destroyCustomer']]);
     }
 
     public function index(){
@@ -31,7 +34,7 @@ class CustomersController extends BaseController
             'firstName' => 'required',
             'lastName' => 'required',
             'phoneNum' => 'required|string',
-            'address'   => 'required',
+            'address'   => 'nullable',
             'gender' => 'required'
         ]);
 
@@ -164,6 +167,19 @@ class CustomersController extends BaseController
         $id = $request->id;
         $point = Account::where('customer_id', $id)->first();
         return $this->sendResponse($point, 'Accrued Points');
+
+    }
+
+    public function customerBlacklist($id){
+        try {
+            $customer = Customer::findOrFail($id);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('No record found for your query', $th->getMessage());
+        }
+
+        $customer->status = 'INACTIVE';
+        $customer->update();
+        return $this->sendResponse('Customer disabled successfully.', 'successful');
 
     }
 

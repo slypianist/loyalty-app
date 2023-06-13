@@ -26,7 +26,7 @@ class DashboardController extends BaseController
     }
 
     public function getPartnerCenter(){
-        $id = auth()->user()->id;
+        $id = auth('api')->user()->id;
         $data['centers'] = DB::table('shops')->where('user_id', $id)
                         ->select('id','shopCode', 'name', 'address')
                         ->get();
@@ -38,7 +38,7 @@ class DashboardController extends BaseController
     // General Stats.
 
     public function partnerCardStatsAll(){
-        $id = auth()->user()->id;
+        $id = auth('api')->user()->id;
         $center = DB::table('shops')->where('user_id', $id)->pluck('id')->toArray();
 
         $data['totalCustomer'] = DB::table('transactions')->where('shop_id', $center)->count();

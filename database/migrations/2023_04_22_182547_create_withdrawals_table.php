@@ -18,9 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('shop_id');
             $table->unsignedBigInteger('rep_id');
-            $table->foreign('rep_id')->references('id')->on('reps')->onUpdate('cascade');
+            $table->foreign('rep_id')->references('id')->on('reps')->onDelete('cascade');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
+            $table->unsignedBigInteger('invoice_id')->nullable();
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onUpdate('cascade');
             $table->double('pointsRedeemed',10,2);
             $table->enum('status',['PAID', 'NOT-PAID'])->default('NOT-PAID');
             $table->timestamps();

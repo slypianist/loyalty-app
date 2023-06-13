@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\BaseController;
+use ErrorException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 use Spatie\Permission\Models\Permission;
@@ -19,7 +20,11 @@ class RoleController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:list-roles|create-role|update-role|delete-role|view-role', ['only'=> ['index']]);
+        $this->middleware('permission:create-role', ['only'=> ['store']]);
+        $this->middleware('permission:view-role', ['only'=> ['show']]);
+        $this->middleware('permission:update-role', ['only'=> ['update']]);
+        $this->middleware('permission:delete-role', ['only'=> ['destroy']]);
     }
     public function index(){
         $roles = Role::all();
@@ -78,7 +83,9 @@ class RoleController extends BaseController
         }
         $data['permissions'] = Permission::get();
         $data['rolePermissions'] = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
-        ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')->all();
+                                ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                                ->pluck('permissions.name AS permission', 'permissions.id AS id',)
+                                ->all();
 
         return $this->sendResponse($data, 'Successful');
 
@@ -109,14 +116,20 @@ class RoleController extends BaseController
     }
 
     public function destroy($id){
-         $role =   Role::where('id', $id)->first();
-         if($role){
 
-            $role->delete();
-            return $this->sendResponse($role, 'Role deleted successfully');
-         }else{
-            return $this->sendError('Operation failed. Invalid role ID');
-         }
+        $role =   Role::where('id', $id)->first();
+
+        try {
+            if($role->name == "Super Admin"){
+                return $this->sendError('Action failed. Cannot delete Super Admin Role');
+             }else{
+                $role->delete();
+                return $this->sendResponse($role, 'Role deleted successfully');
+             }
+
+        } catch (ErrorException $th) {
+           return $this->sendError('Invalid Role ID given');
+        }
 
     }
 

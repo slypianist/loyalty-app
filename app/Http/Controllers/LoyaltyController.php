@@ -60,6 +60,7 @@ class LoyaltyController extends BaseController
         $repName = auth('rep')->user()->firstName;
         $shopId = $request->shopId;
         $compId = $request->companyId;
+      //  $sageCode = $request->
 
 
         // Check if rep is assigned to shop
@@ -68,6 +69,17 @@ class LoyaltyController extends BaseController
 
         if($center->count() == NULL){
             return $this->sendError('Operation failed. Center is not assigned to rep: '.$repName);
+        }
+
+        //Check if center has company code
+
+        if($center->companyCode == NULL){
+            $center->companyCode = $compId;
+            $center->update();
+        }else{
+            if($center->companyCode != $compId){
+                return $this->sendError('Not allowed to award points from center not assigned to you.');
+            }
         }
 
         //Check if invoice is already used.
@@ -115,6 +127,7 @@ class LoyaltyController extends BaseController
                 $trans->amount = $invoice->amount;
                 $trans->rep_id = $repId;
                 $trans->shop_id = $shopId;
+                $trans->invoice_id = $invoice->id;
                 $trans->awardedPoints = $points;
                 $trans->save();
 
@@ -122,7 +135,7 @@ class LoyaltyController extends BaseController
                 //Get transaction details.
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
-                $data['amountPurchased'] = $invoice->amount;
+                $data['amountPurchased'] = number_format($invoice->amount,2);
                 $data['awardedPoint'] = $points;
                 $data['center'] = $center->name;
                 $data['totalPoints'] = $acc->point;
@@ -158,15 +171,17 @@ class LoyaltyController extends BaseController
                 $trans->customer_id = $customerId;
                 $trans->amount = $request->amount;
                 $trans->rep_id = $repId;
+                $trans->invoice_id = $invoice->id;
                 $trans->shop_id = $request->shopId;
                 $trans->awardedPoints = $points;
                 $trans->save();
 
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
-                $data['amountPurchased'] = $invoice->amount;
-                $data['awardedPoint'] = $points;
+                $data['amountPurchased'] = number_format($invoice->amount,2);
+                $data['awardedPoint'] =number_format($points,2);
                 $data['center'] = $center->name;
+                $data['invoiceNum'] = $invoice->invoiceCode;
                 $data['totalPoints'] = $acc->point;
 
                 // Send Email to group and SMS to customer.
@@ -217,24 +232,33 @@ class LoyaltyController extends BaseController
         $compId = $request->companyId;
 
         // Check if rep is assigned to shop.
-        $center = DB::table('shops')->where('shops.id', $shopId)
+       /*  $center = DB::table('shops')->where('shops.id', $shopId)
                                     ->join('reps', 'reps.id', '=', 'shops.rep_id')
-                                    ->count();
+                                    ->get(); */
+
+            $center = Shop::where('rep_id', $repId)->first();
 
         //Check if invoice is already used.
          $invoice = Invoice::where('invoiceCode', $invoiceNum)
                             ->where('companyId', $compId)
                             ->first();
-       /*  $invoice =    Invoice::where(function ($query) use ($invoiceNum, $compId) {
-                                $query->where('invoiceCode', '=', $invoiceNum)
-                                      ->where('companyId', $compId);
-                            })->get(); */
 
         // Get customer's details.
         $customer = Customer::findorFail($customerId);
 
-        if($center == NULL){
+        if($center->count() == NULL){
             return $this->sendError('Operation failed. Center is not assigned to rep: '.$repName);
+        }
+
+        //Check if center has company code
+
+        if($center->companyCode == NULL){
+            $center->companyCode = $compId;
+            $center->update();
+        }else{
+            if($center->companyCode != $compId){
+                return $this->sendError('Not allowed to award points from center not assigned to you.');
+            }
         }
 
 
@@ -277,25 +301,26 @@ class LoyaltyController extends BaseController
                 $trans->amount = $request->amount;
                 $trans->rep_id = $repId;
                 $trans->shop_id = $request->shopId;
+                $trans->invoice_id = $invoice->id;
                 $trans->awardedPoints = $points;
                 $trans->save();
-
 
                 // Withdrawals
                 $withdrawal = new Withdrawal();
                 $withdrawal->customer_id = $customerId;
                 $withdrawal->shop_id = $shopId;
                 $withdrawal->rep_id = $repId;
+                $withdrawal->invoice_id = $invoice->id;
                 $withdrawal->pointsRedeemed = $claim;
                 $withdrawal->save();
 
                 // Get details
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
-                $data['amount'] = $invoice->amount;
+                $data['amount'] = number_format($invoice->amount,2);
                 $data['points'] = $points;
-                $data['claims'] = $claim;
-                $data['balance'] = $balance;
+                $data['claims'] = number_format($claim,2);
+                $data['balance'] = number_format($balance);
 
                 //Send Email to group and SMS to customer.
                 Mail::to($customer->email)->send(new ClaimPoint($data));
@@ -335,6 +360,7 @@ class LoyaltyController extends BaseController
                 $trans->amount = $request->amount;
                 $trans->rep_id = $repId;
                 $trans->shop_id = $request->shopId;
+                $trans->invoice_id = $invoice->id;
                 $trans->awardedPoints = $points;
                 $trans->save();
 
@@ -343,15 +369,16 @@ class LoyaltyController extends BaseController
                 $withdrawal->customer_id = $customerId;
                 $withdrawal->shop_id = $shopId;
                 $withdrawal->rep_id = $repId;
+                $withdrawal->invoice_id = $invoice->id;
                 $withdrawal->pointsRedeemed = $claim;
                 $withdrawal->save();
 
                 $data['customerName'] = $customer->firstName.' '. $customer->lastName;
                 $data['customerPhone'] = $customer->phoneNum;
-                $data['amount'] = $invoice->amount;
+                $data['amount'] = number_format($invoice->amount,2);
                 $data['points'] = $points;
-                $data['claims'] = $claim;
-                $data['balance'] = $balance;
+                $data['claims'] = number_format($claim,2);
+                $data['balance'] =number_format($balance);
 
                 // Send Email to group and SMS to customer.
                 Mail::to($customer->email)->send(new ClaimPoint($data));

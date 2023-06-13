@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('cascade');
             $table->double('amount',12,2);
             $table->string('invoiceCode');
+            $table->string('companyId');
             $table->timestamps();
         });
     }

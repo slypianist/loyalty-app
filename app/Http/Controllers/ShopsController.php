@@ -22,7 +22,15 @@ class ShopsController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:list-centers|create-center|view-center|update-center|delete-center|assign-center-partner|unassign-center-partner|assign-center-rep|unassign-center-rep', ['only'=> ['index']]);
+        $this->middleware('permission:create-center', ['only'=> ['createShop']]);
+        $this->middleware('permission:view-center', ['only'=> ['showShop']]);
+        $this->middleware('permission:update-center', ['only'=> ['updateShop']]);
+        $this->middleware('permission:delete-center', ['only'=> ['destroyShop']]);
+        $this->middleware('permission:assign-center-partner', ['only'=> ['assignShop']]);
+        $this->middleware('permission:unassign-center-partner', ['only'=> ['unassignShop']]);
+        $this->middleware('permission:assign-center-rep', ['only'=> ['assignShopToRep']]);
+        $this->middleware('permission:unassign-center-rep', ['only'=> ['unassignShopToRep']]);
     }
 
     public function index(){
@@ -113,9 +121,9 @@ class ShopsController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('An error occurred', $th->getMessage());
         }
-        if($shop->status === 'ASSIGNED'){
+        if($shop->status === 'ASSIGNED-TO-PARTNER' || $shop->status2 === 'ASSIGNED-TO-REP'){
             return $this->sendError(['result'=>$shop->name.' is currently assigned. Unassign before deleting.']);
-           // return response()->json(['message'=>'Shop: '.$shop->name.' is currently assigned. Unassign before deleting.']);
+
         }else{
             // Delete shop
             $shop->delete();

@@ -29,7 +29,7 @@ class AuthController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function adminLogin(Request $request, $guard='admin'){
+    public function adminLogin(Request $request){
         $this->validate($request,[
             'email' => 'required|email',
             'password' => 'required'
@@ -41,7 +41,7 @@ class AuthController extends BaseController
                 return $this->sendError('Invalid username or password');
             }
 
-            return $this->getToken($token, $guard);
+            return $this->getToken($token);
     }
 
     public function refresh(){
@@ -74,23 +74,23 @@ class AuthController extends BaseController
      * @return \Illuminate\Http\JsonResponse
     */
 
-    public function partnerLogin(Request $request){
+    public function partnerLogin(Request $request, $guard='api'){
         $credentials =     $this->validate($request,[
                  'email' => 'required|email',
                  'password' => 'required'
              ]);
 
-             if(!$token = auth()->attempt($credentials)){
+             if(!$token = auth($guard)->attempt($credentials)){
                  return response()->json(['error'=>'Invalid username or password'], 401);
 
              }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $guard);
 
     }
 
     public function authPartner(){
-       $id = auth()->user()->id;
+       $id = auth('api')->user()->id;
 
        try {
         $partner = User::findOrFail($id);
@@ -174,7 +174,7 @@ class AuthController extends BaseController
           * @return \Illuminate\Http\JsonResponse
         */
     public function repLogout(){
-        auth('rep')->logout();
+        auth()->logout();
         return $this->sendResponse('Logged out successful',true);
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\PasswordReset;
 use App\Models\Shop;
-
 use App\Models\Admin;
 use App\Models\Partner;
 use Illuminate\Support\Arr;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends BaseController
@@ -23,7 +24,11 @@ class AdminController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:list-admins|view-admin|create-admin|update-admin|delete-admin', ['only'=> ['index']]);
+        $this->middleware('permission:create-admin', ['only'=> ['saveAdmin']]);
+        $this->middleware('permission:view-admin', ['only'=> ['showAdmin']]);
+        $this->middleware('permission:update-admin', ['only'=> ['updateAdmin']]);
+        $this->middleware('permission:delete-admin', ['only'=> ['destroyAdmin']]);
     }
 
        /**
@@ -72,7 +77,7 @@ class AdminController extends BaseController
         try {
             $admin =   Admin::create($input);
         } catch (QueryException $th) {
-            return $this->sendError('Duplicate Entry detected. Email already exist');
+            return $this->sendError('Duplicate Entry detected. Email already exists.');
         }
 
         $admin->assignRole($request->roles);
@@ -137,7 +142,12 @@ class AdminController extends BaseController
             return $this->sendError('Update failed.', $th->getMessage());
         }
         $admin->update($data);
-        $admin->syncRoles($request->input('roles'));
+        try {
+            $admin->syncRoles($request->input('roles'));
+        } catch (RoleDoesNotExist $th) {
+            return $this->sendError('Roles not saved. Role(s) does not exist', $th->getMessage());
+        }
+
         return $this->sendResponse($admin, 'Admin user updated successfully.');
     }
 

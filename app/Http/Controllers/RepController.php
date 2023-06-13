@@ -20,7 +20,11 @@ class RepController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:list-reps|create-rep|update-rep|delete-rep|view-rep', ['only'=> ['index']]);
+        $this->middleware('permission:create-rep', ['only'=> ['createRep']]);
+        $this->middleware('permission:view-rep', ['only'=> ['showRep']]);
+        $this->middleware('permission:update-rep', ['only'=> ['updateRep']]);
+        $this->middleware('permission:delete-rep', ['only'=> ['destroyRep']]);
     }
 
        /**
