@@ -65,8 +65,9 @@ class PermissionSeeder extends Seeder
             //Others
             'list-loyalty-rules',
             'create-loyalty-rule',
-         */   'set-loyalty-rule',
+            'set-loyalty-rule',
             'delete-loyalty-rule',
+         */   'reset-app',
            // 'set-claims-status',
         ];
 
