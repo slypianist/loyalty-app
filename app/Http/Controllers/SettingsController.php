@@ -16,7 +16,7 @@ class SettingsController extends BaseController
      */
     public function __construct()
     {
-        //
+        $this->middleware('permission:reset-app', ['only'=> ['resetSetting']]);
     }
 
 
