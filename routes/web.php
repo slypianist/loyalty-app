@@ -58,6 +58,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('reps/logout', 'AuthController@repLogout');
         $router->get('auth/rep', 'AuthController@authRep');
         $router->get('dashboard/rep/card/stats', 'RepDashboardController@cardStats');
+        $router->post('change/password/rep', 'RepController@changePassRep');
 });
             // Partner Routes
     $router->group(['middleware' => ['auth:api']], function () use ($router) {
@@ -73,6 +74,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('dashboard/partner/top/visit', 'DashboardController@sideBarStats3');
             $router->get('claim/report', 'ReportController@getPartnerClaimReport');
             $router->get('point/report', 'ReportController@getPartnerPointReport');
+            $router->post('change/password/partner', 'UserController@changePassUser');
     });
 
     $router->group(['middleware' => ['auth:admin']], function () use ($router) {
@@ -149,6 +151,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('center/top/enrol', 'AdminDashboardController@centerTopEnrol');
 
         // Settings
+        $router->post('change/password/admin', 'AdminController@changePassAdmin');
 
         $router->post('setting/reset', 'SettingsController@resetSetting');
     });

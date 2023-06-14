@@ -141,5 +141,26 @@ class UserController extends BaseController
 
     }
 
+    public function changePassUser(Request $request){
+        $this->validate($request,[
+            'password'=> 'required|confirmed'
+
+        ]);
+
+        $email = auth('api')->user()->email;
+
+
+        $user = User::where('email', $email)->first();
+
+        if($user !== NULL){
+            $user->password = Hash::make($request->password);
+            $user->update();
+            return $this->sendResponse($user, 'Password change successful.');
+        }
+
+        return $this->sendError('No record found for this user', 'Invalid user identifier');
+
+       }
+
 
 }

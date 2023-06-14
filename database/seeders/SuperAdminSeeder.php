@@ -20,7 +20,7 @@ class SuperAdminSeeder extends Seeder
         $admin = Admin::create([
             'firstName' => 'Oludayo',
             'lastName' => 'Ajala',
-            'email' => 'ajalaoludayo@gmail.com',
+            'email' => 'oajala@capplc.com',
             'dept' => 'IT/Monitoring',
             'image' => 'default.png',
             'password' => Hash::make('password')

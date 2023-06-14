@@ -103,8 +103,14 @@ class RoleController extends BaseController
         } catch (ModelNotFoundException $th) {
             return $this->sendError('No record for this query', $th->getMessage());
         }
-            $role->name = $request->name;
-            $role->update();
+
+        if($role->name == "Super Admin"){
+            return $this->sendError("Action failed. You cannot edit a Super Admin role.");
+        }
+
+        $role->name = $request->name;
+        $role->update();
+
         try {
             $role->syncPermissions($request->input('permissions'));
         } catch (PermissionDoesNotExist $th) {
@@ -128,7 +134,7 @@ class RoleController extends BaseController
              }
 
         } catch (ErrorException $th) {
-           return $this->sendError('Invalid Role ID given');
+           return $this->sendError('Invalid Role ID.');
         }
 
     }

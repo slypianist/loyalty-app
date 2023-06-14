@@ -167,4 +167,25 @@ class AdminController extends BaseController
 
        }
 
+       public function changePassAdmin(Request $request){
+        $this->validate($request,[
+            'password'=> 'required|confirmed'
+
+        ]);
+
+        $email = auth('admin')->user()->email;
+
+
+        $admin = Admin::where('email', $email)->first();
+
+        if($admin !== NULL){
+            $admin->password = Hash::make($request->password);
+            $admin->update();
+            return $this->sendResponse($admin, 'Password change successful.');
+        }
+
+        return $this->sendError('No record found for this user', 'Invalid user identifier');
+
+       }
+
 }

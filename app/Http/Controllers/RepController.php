@@ -163,4 +163,25 @@ class RepController extends BaseController
 
        }
 
+       public function changePassRep(Request $request){
+        $this->validate($request,[
+            'password'=> 'required|confirmed'
+
+        ]);
+
+        $email = auth('rep')->user()->email;
+
+
+        $rep = Rep::where('email', $email)->first();
+
+        if($rep !== NULL){
+            $rep->password = Hash::make($request->password);
+            $rep->update();
+            return $this->sendResponse($rep, 'Password change successful.');
+        }
+
+        return $this->sendError('No record found for this user', 'Invalid user identifier');
+
+       }
+
 }
