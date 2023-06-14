@@ -107,7 +107,7 @@ class LoyaltyController extends BaseController
             // Update loyalty points if customer is already registered.
             if($acc){
                // $initialPoints = $request->amount*($rule/100);
-                $points = $request->amount*($rule/100);
+                $points = floor($request->amount*($rule/100));
                 $acc->point +=$points;
                 $acc->visit = $acc->visit+1;
                 $acc->update();
@@ -149,7 +149,7 @@ class LoyaltyController extends BaseController
             }
             // Create a loyalty account if customer has none or new.
             elseif ($acc === NULL) {
-                $points = $request->amount*($rule/100);
+                $points = floor($request->amount*($rule/100));
 
                 $acc = new Account();
                 $acc->customer_id = $customer->id;
@@ -244,7 +244,12 @@ class LoyaltyController extends BaseController
                             ->first();
 
         // Get customer's details.
-        $customer = Customer::findorFail($customerId);
+        try {
+            $customer = Customer::findorFail($customerId);
+        } catch (ModelNotFoundException $th) {
+            return $this->sendError('Invalid customer ID', $th->getMessage());
+        }
+
 
         if($center->count() == NULL){
             return $this->sendError('Operation failed. Center is not assigned to rep: '.$repName);
@@ -273,10 +278,9 @@ class LoyaltyController extends BaseController
             if($acc){
 
                // $initialPoints = $request->amount*($rule/100);
-                $points = $request->amount*($rule/100);
+                $points = floor($request->amount*($rule/100));
                 $totalPoints = $acc->point+$points;
                 $balance = $totalPoints - $claim;
-             //   dd($balance);
 
                 //Check if claim is more than accumulated points.
                 if($balance < 0){
@@ -334,7 +338,7 @@ class LoyaltyController extends BaseController
             // Create a loyalty account if customer has none.
             elseif ($acc === NULL) {
                 // Get awarded points
-                $points = request('amount')*($rule/100);
+                $points = floor(request('amount')*($rule/100));
                 $balance = $points - $claim;
                 if($balance < 0){
                     return $this->sendError('Your claims cannot be more than your accumulated points');
