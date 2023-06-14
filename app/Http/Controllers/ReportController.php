@@ -24,7 +24,7 @@ class ReportController extends BaseController
                 ->join('customers', 'customers.id', '=', 'withdrawals.customer_id')
                 ->join('reps', 'reps.id', '=', 'withdrawals.rep_id')
                 ->join('shops', 'shops.id', '=', 'withdrawals.shop_id')
-               ->join('invoices', 'invoices.id', '=', 'withdrawals.invoice_id')
+               ->leftJoin('invoices', 'invoices.id', '=', 'withdrawals.invoice_id')
                 ->select('withdrawals.id as id','withdrawals.pointsRedeemed AS pointsClaimed','invoices.invoiceCode AS invoiceNum', 'customers.firstName AS customerFirstName', 'customers.lastname AS customerLastName',
                                 'shops.name AS shop', 'shops.address AS address', 'reps.firstName AS repFirstName', 'reps.lastName AS repsLastName')
                 ->orderByDesc('withdrawals.id')
@@ -37,7 +37,7 @@ class ReportController extends BaseController
                         ->join('customers', 'transactions.customer_id', '=', 'customers.id')
                         ->join('reps', 'reps.id', '=', 'transactions.rep_id')
                         ->join('shops', 'shops.id', '=', 'transactions.shop_id')
-                        ->join('invoices', 'invoices.id', '=', 'transactions.invoice_id')
+                        ->leftJoin('invoices', 'invoices.id', '=', 'transactions.invoice_id')
                         ->select('transactions.id as id', 'transactions.amount AS amount', 'transactions.awardedPoints AS points', 'invoices.invoiceCode AS invoiceNum', 'customers.firstName AS customerFirstName', 'customers.lastname AS customerLastName',
                                 'shops.name AS shop', 'shops.address AS address', 'reps.firstName AS repFirstName', 'reps.lastName AS repsLastName', 'transactions.created_at AS transactionTime')
                         ->orderByDesc('transactions.id')
