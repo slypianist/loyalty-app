@@ -119,6 +119,9 @@ $app->middleware([    App\Http\Middleware\CorsMiddleware::class]);
  $app->alias('cache', \Illuminate\Cache\CacheManager::class);  // if you don't have this already
  $app->register(Spatie\Permission\PermissionServiceProvider::class);
  $app->register(Illuminate\Mail\MailServiceProvider::class);
+ $app->register(Maatwebsite\Excel\ExcelServiceProvider::class);
+ $app->alias(Maatwebsite\Excel\Facades\Excel::class, 'Excel');
+
 
 
 

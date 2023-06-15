@@ -152,6 +152,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         // Settings
         $router->post('change/password/admin', 'AdminController@changePassAdmin');
+        $router->post('bulk/upload/customer', 'CustomersController@bulkUploadCustomer');
 
         $router->post('setting/reset', 'SettingsController@resetSetting');
     });

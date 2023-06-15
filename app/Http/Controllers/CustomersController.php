@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Customer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Arr;
 
 class CustomersController extends BaseController
 {
@@ -24,7 +27,7 @@ class CustomersController extends BaseController
     }
 
     public function index(){
-        $customer = Customer::all();
+        $customer = Customer::where('status', 'ACTIVE')->get();
        return $this->sendResponse($customer, 'All registered customers');
 
     }
@@ -98,7 +101,8 @@ class CustomersController extends BaseController
         } catch (ModelNotFoundException $th) {
            return $this->sendError('An error Occurred', $th->getMessage());
         }
-        $customer->delete();
+        $customer->status = "INACTIVE";
+        $customer->update();
         return $this->sendResponse($customer, 'Customer record deleted successfully');
 
       //  return response()->json(['message'=>'Customer deleted successfully'],200);
@@ -170,7 +174,7 @@ class CustomersController extends BaseController
 
     }
 
-    public function customerBlacklist($id){
+    public function blacklistCustomer($id){
         try {
             $customer = Customer::findOrFail($id);
         } catch (ModelNotFoundException $th) {
@@ -179,11 +183,56 @@ class CustomersController extends BaseController
 
         $customer->status = 'INACTIVE';
         $customer->update();
-        return $this->sendResponse('Customer disabled successfully.', 'successful');
+        return $this->sendResponse('Customer blacklisted successfully.', 'successful');
 
     }
 
+    public function showBlacklistCustomer(){
+        $data = Customer::where('status', 'INACTIVE')->get();
+        return $this->sendResponse($data, 'Backlisted customers');
+    }
 
+    // Bulk upload customers
+    public function bulkUploadCustomer(Request $request){
+        // Retrieve the uploaded file
+        $this->validate($request, [
+            'excel' => 'required'
 
+        ]);
+        $file = $request->file('excel');
+
+        // Validate the uploaded file
+        if (!$file->isValid()) {
+            return response()->json(['error' => 'Invalid file'], 400);
+        }
+
+        // Process the Excel file and populate the customer database table
+        try {
+            $data = Excel::toArray([], $file);
+           // dd($data);
+
+            $customerData = $data[0]; // Assuming the customer data is in the first sheet
+           array_shift($customerData);
+            foreach ($customerData as $customer) {
+                //dd($customer['lastName']);
+                // Insert the customer data into the database
+                Customer::create([
+                    'firstName' => $customer[0],
+                    'lastName' => $customer[1],
+                    'phoneNum'  => $customer[2],
+                    'address' => $customer[3],
+                    'gender' => $customer[4],
+                    'image' => "default.png",
+                    'status' => $customer[5],
+                    'created_at' => \Carbon\Carbon::now(),
+                    'updated_at' => \Carbon\Carbon::now(),
+                ]);
+            }
+
+            return response()->json(['message' => 'Customer data uploaded successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to process bulk upload.', 'message'=> $e->getMessage()], 500);
+        }
+    }
 
 }
