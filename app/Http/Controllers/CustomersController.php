@@ -229,9 +229,10 @@ class CustomersController extends BaseController
                 ]);
             }
 
-            return response()->json(['message' => 'Customer data uploaded successfully.']);
+           return $this->sendResponse('Success','Customer data uploaded successfully.');
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to process bulk upload.', 'message'=> $e->getMessage()], 500);
+            return $this->sendError('Failed to process bulk upload.', $e->getMessage());
+
         }
     }
 
