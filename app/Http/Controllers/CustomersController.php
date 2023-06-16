@@ -27,7 +27,7 @@ class CustomersController extends BaseController
     }
 
     public function index(){
-        $customer = Customer::where('status', 'ACTIVE')->get();
+        $customer = Customer::where('status', 'ACTIVE')->orderBy('id', 'DESC')->get();
        return $this->sendResponse($customer, 'All registered customers');
 
     }
