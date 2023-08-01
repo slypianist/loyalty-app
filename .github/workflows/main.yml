@@ -26,9 +26,8 @@ jobs:
           SOURCE: ./ # This is the root directory of your application.
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-          TARGET: /var/www/html/cap-api # Replace this with the path to your deployment directory on the remote server...
+          TARGET: /var/www/test.loyalty.capplc.com/cap-api # Replace this with the path to your deployment directory on the remote server...
           SCRIPT_AFTER: |
-           sudo chown -R sylvester: /var/www/html/cap-api
-           sudo chmod -R u+w /var/www/html/cap-api
-            cp /var/www/html/.env.production /var/www/html/cap-api/.env
+            chmod -R u+w /var/www/test.loyalty.capplc.com/cap-api
+            cp /var/www/html/.env.production /var/www/test.loyalty.capplc.com/cap-api/.env
             echo $RSYNC_STDOUT

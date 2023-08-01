@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         $permissions = [
-           /* //Customers Permission
+            //Customers Permission
             'list-customers',
             'create-customer',
             'view-customer',
@@ -67,7 +67,7 @@ class PermissionSeeder extends Seeder
             'create-loyalty-rule',
             'set-loyalty-rule',
             'delete-loyalty-rule',
-         */   'reset-app',
+            'reset-app',
            // 'set-claims-status',
         ];
 
