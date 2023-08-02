@@ -31,6 +31,8 @@ jobs:
             # Ensure that the deployment user has the necessary permissions on the target directory.
             sudo chown -R ${{ secrets.SSH_USERNAME }}: /var/www/test.loyalty.capplc.com/cap-api
 
+            sudo chown -R ${{ secrets.SSH_USERNAME }}:data-www /var/www/test.loyalty.capplc.com/cap-api/storage
+
             # Make sure that the deployment user has write permissions to the target directory.
             sudo chmod -R u+w /var/www/test.loyalty.capplc.com/cap-api
 
