@@ -29,7 +29,10 @@ jobs:
           TARGET: /var/www/test.loyalty.capplc.com/cap-api # Replace this with the path to your deployment directory on the remote server...
           SCRIPT_AFTER: |
             # Ensure that the deployment user has the necessary permissions on the target directory.
-            sudo chown -R ${{ secrets.SSH_USERNAME }}: /var/www/test.loyalty.capplc.com/cap-api
+            sudo chown -R ${{ secrets.SSH_USERNAME }}:data-www /var/www/test.loyalty.capplc.com
+
+            # Ensure that the deployment user has the necessary permissions on the target directory.
+            sudo chown -R ${{ secrets.SSH_USERNAME }}:data-www /var/www/test.loyalty.capplc.com/cap-api
 
             sudo chown -R ${{ secrets.SSH_USERNAME }}:data-www /var/www/test.loyalty.capplc.com/cap-api/storage
 
