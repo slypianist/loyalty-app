@@ -28,6 +28,12 @@ jobs:
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           TARGET: /var/www/test.loyalty.capplc.com/cap-api # Replace this with the path to your deployment directory on the remote server...
           SCRIPT_AFTER: |
-            chmod -R u+w /var/www/test.loyalty.capplc.com/cap-api
+            # Ensure that the deployment user has the necessary permissions on the target directory.
+            sudo chown -R ${{ secrets.SSH_USERNAME }}: /var/www/test.loyalty.capplc.com/cap-api
+
+            # Make sure that the deployment user has write permissions to the target directory.
+            sudo chmod -R u+w /var/www/test.loyalty.capplc.com/cap-api
+
+            # Copy .env.production to the deployment directory.
             cp /var/www/html/.env.production /var/www/test.loyalty.capplc.com/cap-api/.env
             echo $RSYNC_STDOUT
