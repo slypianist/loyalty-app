@@ -101,7 +101,7 @@ class ShopsController extends BaseController
             'name' => 'required',
             'location' => 'required',
             'address' => 'required',
-           // 'shopCode' => 'required'
+            'choice' => 'nullable',
         ],
         $messages=[
 
@@ -111,7 +111,7 @@ class ShopsController extends BaseController
       //  $data['shopCode'] = "SH-". substr(md5(uniqid(rand(), true)),0,5);
         //dd($data);
         $shop->update($data);
-        return $this->sendResponse($shop, 'Shop updated succesfully');
+        return $this->sendResponse($shop, 'Center updated succesfully.');
 
     }
 
